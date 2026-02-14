@@ -1,0 +1,48 @@
+# Docker-compose file to initiate a PostgreSQL server
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: arkiralor
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: elay-local
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Uncomment to mount custom config
+      # - ./config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Uncomment to set resource limits
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 1g
+    #     reservations:
+    #       memory: 512m
+
+    # Uncomment to add networks
+    # networks:
+    #   - postgres-net
+
+    # Uncomment to add extra hosts
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
+
+volumes:
+  postgres_data:
+    driver: local

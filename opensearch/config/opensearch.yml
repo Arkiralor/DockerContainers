@@ -1,0 +1,6 @@
+# Example OpenSearch configuration file
+# See https://opensearch.org/docs/latest/opensearch/configuration/
+
+# Uncomment and customize settings as needed
+# cluster.name: my-cluster
+# node.name: my-node

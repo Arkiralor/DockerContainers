@@ -1,0 +1,40 @@
+# macOS system files
+.DS_Store
+
+# VS Code settings
+.vscode/
+
+# Docker artifacts
+*.log
+*.pid
+*.sock
+*.tmp
+*.swp
+
+# Container build outputs
+**/data/
+**/logs/
+**/tmp/
+
+# Ignore environment files
+.env
+.env.*
+
+# Ignore backup and temp files
+*~
+*.bak
+*.old
+
+# Ignore node_modules (if any JS tooling)
+node_modules/
+
+# Ignore Python cache (if any Python tooling)
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore Compose override files
+*docker-compose.override.yml
+
+# Ignore init scripts outputs
+postgresql/initdb.d/*.out

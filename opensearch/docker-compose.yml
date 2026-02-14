@@ -1,0 +1,57 @@
+# Docker file to initiate an OpenSearch server
+version: '3.8'
+
+services:
+  opensearch:
+    image: opensearchproject/opensearch:latest
+    container_name: opensearch-node
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=YourStrongPassword1!"
+      # Add plugin install here, e.g.:
+      # - "OPENSEARCH_PLUGINS=opensearch-alerting,opensearch-anomaly-detection"
+      # - "OPENSEARCH_LOG_LEVEL=INFO"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+      # Uncomment to mount custom config
+      # - ./config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Uncomment to set resource limits
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 1g
+    #     reservations:
+    #       memory: 512m
+
+    # Uncomment to add networks
+    # networks:
+    #   - opensearch-net
+
+    # Uncomment to add extra hosts
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
+
+volumes:
+  opensearch_data:
+    driver: local
