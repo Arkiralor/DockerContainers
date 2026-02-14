@@ -4,3 +4,8 @@
 # Uncomment and customize settings as needed
 # cluster.name: my-cluster
 # node.name: my-node
+
+# Disable HTTP SSL for local/dev use
+plugins.security.disabled: true
+network.host: 0.0.0.0
+## Remove or comment out any other plugins.security.* SSL settings for dev

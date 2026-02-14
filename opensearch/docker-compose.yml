@@ -22,8 +22,8 @@ services:
       - "9600:9600"
     volumes:
       - opensearch_data:/usr/share/opensearch/data
-      # Uncomment to mount custom config
-      # - ./config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:ro
+      # Mount custom config to disable SSL
+      - ./config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:ro
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
@@ -51,6 +51,23 @@ services:
     # Uncomment to add extra hosts
     # extra_hosts:
     #   - "host.docker.internal:host-gateway"
+
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:latest
+    container_name: opensearch-dashboards
+    ports:
+      - "5601:5601"
+    environment:
+      - OPENSEARCH_HOSTS=http://opensearch:9200
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
+    depends_on:
+      - opensearch
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   opensearch_data:
