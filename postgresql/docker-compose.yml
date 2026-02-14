@@ -1,18 +1,16 @@
 # Docker-compose file to initiate a PostgreSQL server
-version: '3.8'
-
 services:
   postgres:
     image: postgres:latest
     container_name: postgres
     environment:
-      POSTGRES_USER: arkiralor
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: elay-local
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
       # Uncomment to mount custom config
       # - ./config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
     restart: unless-stopped

@@ -1,0 +1,153 @@
+# Docker Compose file for multiple Redis instances
+# Usage: docker-compose -f docker-compose.multi-redis.yml up -d
+version: '3.8'
+
+services:
+  caching:
+    image: redis:latest
+    container_name: caching
+    ports:
+      - "6379:6379"
+    volumes:
+      - caching_data:/data
+      # Uncomment to mount custom config
+      # - ./config/caching.conf:/usr/local/etc/redis/redis.conf:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_DB_NAME=caching
+
+  celery_base_queues:
+    image: redis:latest
+    container_name: celery_base_queues
+    ports:
+      - "6380:6379"
+    volumes:
+      - celery_base_queues_data:/data
+      # Uncomment to mount custom config
+      # - ./config/celery_base_queues.conf:/usr/local/etc/redis/redis.conf:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_DB_NAME=celery_base_queues
+
+  celery_advanced_queues:
+    image: redis:latest
+    container_name: celery_advanced_queues
+    ports:
+      - "6381:6379"
+    volumes:
+      - celery_advanced_queues_data:/data
+      # Uncomment to mount custom config
+      # - ./config/celery_advanced_queues.conf:/usr/local/etc/redis/redis.conf:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_DB_NAME=celery_advanced_queues
+
+  multipurpose:
+    image: redis:latest
+    container_name: multipurpose
+    ports:
+      - "6382:6379"
+    volumes:
+      - multipurpose_data:/data
+      # Uncomment to mount custom config
+      # - ./config/multipurpose.conf:/usr/local/etc/redis/redis.conf:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_DB_NAME=multipurpose
+
+  miscellaneous:
+    image: redis:latest
+    container_name: miscellaneous
+    ports:
+      - "6383:6379"
+    volumes:
+      - miscellaneous_data:/data
+      # Uncomment to mount custom config
+      # - ./config/miscellaneous.conf:/usr/local/etc/redis/redis.conf:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_DB_NAME=miscellaneous
+
+    # Uncomment to set resource limits for any service
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 512m
+    #     reservations:
+    #       memory: 256m
+
+    # Uncomment to add networks
+    # networks:
+    #   - redis-net
+
+volumes:
+  caching_data:
+    driver: local
+  celery_base_queues_data:
+    driver: local
+  celery_advanced_queues_data:
+    driver: local
+  multipurpose_data:
+    driver: local
+  miscellaneous_data:
+    driver: local
+
+# Uncomment to create a custom network
+# networks:
+#   redis-net:
+#     driver: bridge
