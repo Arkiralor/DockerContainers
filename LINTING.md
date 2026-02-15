@@ -11,7 +11,6 @@ This directory contains configuration files for code quality tools used in this 
 | `.markdownlint.yml` | Markdown linting configuration | markdownlint-cli |
 | `.editorconfig` | Editor formatting consistency | EditorConfig |
 | `.pre-commit-config.yaml` | Pre-commit hooks configuration | pre-commit |
-| `.github/workflows/lint.yml` | CI/CD linting workflow | GitHub Actions |
 | `scripts/lint.sh` | Local linting script | Bash |
 
 ## Quick Usage
