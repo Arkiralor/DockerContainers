@@ -8,13 +8,13 @@
 
 This repository provides production-quality Docker Compose setups for popular open-source services used in **local development only**. Each service is standalone, battle-tested, and ready to use out of the box.
 
-## 🚀 Services
+## Services
 
 - **[PostgreSQL](#postgresql)** - Powerful relational database (v16+)
 - **[Redis](#redis)** - High-performance in-memory data store (single & multi-instance)
 - **[OpenSearch](#opensearch)** - Search and analytics engine with dashboards
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Quick Start](#quick-start)
 - [Repository Structure](#repository-structure)
@@ -28,7 +28,7 @@ This repository provides production-quality Docker Compose setups for popular op
 - [Contributing](#contributing)
 - [License](#license)
 
-## ⚡ Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -72,7 +72,7 @@ That's it! Your services are now running:
 ./scripts/status.sh
 ```
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 DockerContainers/
@@ -116,7 +116,7 @@ DockerContainers/
 └── README.md                # This file
 ```
 
-## 🔧 Service Details
+## Service Details
 
 ### PostgreSQL
 
@@ -127,12 +127,12 @@ DockerContainers/
 **Default Password**: `password`
 
 **Features**:
-- ✅ Persistent data storage
-- ✅ Health checks enabled
-- ✅ Initialization script support
-- ✅ Custom configuration support
-- ✅ Resource limits (1GB RAM, 1 CPU)
-- ✅ Automatic backups via pg_dump
+- Persistent data storage
+- Health checks enabled
+- Initialization script support
+- Custom configuration support
+- Resource limits (1GB RAM, 1 CPU)
+- Automatic backups via pg_dump
 
 **Connection String**:
 ```
@@ -146,7 +146,7 @@ make shell-postgres          # Open psql shell
 make logs-postgres           # View logs
 ```
 
-[📖 Full PostgreSQL Documentation](postgresql/README.md)
+[Full PostgreSQL Documentation](postgresql/README.md)
 
 ---
 
@@ -172,11 +172,11 @@ make logs-postgres           # View logs
 - **Command**: `make start-multi-redis`
 
 **Features**:
-- ✅ Persistent data storage (RDB)
-- ✅ Health checks enabled
-- ✅ Custom configuration support
-- ✅ Resource limits (512MB RAM, 0.5 CPU per instance)
-- ✅ Independent instances (can run both single + multi)
+- Persistent data storage (RDB)
+- Health checks enabled
+- Custom configuration support
+- Resource limits (512MB RAM, 0.5 CPU per instance)
+- Independent instances (can run both single + multi)
 
 **Connection**:
 ```bash
@@ -191,7 +191,7 @@ make shell-redis             # Open Redis CLI
 make logs-redis              # View logs
 ```
 
-[📖 Full Redis Documentation](redis/README.md)
+[Full Redis Documentation](redis/README.md)
 
 ---
 
@@ -206,13 +206,13 @@ make logs-redis              # View logs
 - **OpenSearch Dashboards**: Web UI for visualization and management
 
 **Features**:
-- ✅ Single-node cluster (development mode)
-- ✅ Security disabled for local dev
-- ✅ Persistent data storage
-- ✅ Health checks enabled
-- ✅ Dashboards integrated
-- ✅ Resource limits (2GB RAM, 1 CPU)
-- ✅ Memory lock configuration
+- Single-node cluster (development mode)
+- Security disabled for local dev
+- Persistent data storage
+- Health checks enabled
+- Dashboards integrated
+- Resource limits (2GB RAM, 1 CPU)
+- Memory lock configuration
 
 **Access**:
 - OpenSearch API: http://localhost:9200
@@ -231,11 +231,11 @@ make logs-dashboards         # View Dashboards logs
 curl http://localhost:9200/_cluster/health?pretty
 ```
 
-[📖 Full OpenSearch Documentation](opensearch/README.md)
+[Full OpenSearch Documentation](opensearch/README.md)
 
 ---
 
-## 🛠 Using the Makefile
+## Using the Makefile
 
 The repository includes a comprehensive Makefile with 25+ commands for easy management.
 
@@ -311,7 +311,7 @@ make clean                   # Remove all containers, volumes, and data
 
 ---
 
-## 📜 Management Scripts
+## Management Scripts
 
 All scripts are located in the `scripts/` directory and can be run directly:
 
@@ -359,7 +359,7 @@ Interactive restoration tool with backup selection menu.
 
 ---
 
-## 💾 Backup & Restore
+## Backup & Restore
 
 ### Creating Backups
 
@@ -406,7 +406,7 @@ make restore
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Automated Test Suite
 
@@ -421,25 +421,25 @@ cd test && ./test.sh
 ```
 
 **Test Coverage**:
-- ✅ Docker daemon running
-- ✅ All services running
-- ✅ Health checks passing
-- ✅ Port accessibility (5432, 6379, 9200, 5601)
-- ✅ Database connectivity
-- ✅ Read/write operations
-- ✅ Volume persistence
-- ✅ Script executability
+- Docker daemon running
+- All services running
+- Health checks passing
+- Port accessibility (5432, 6379, 9200, 5601)
+- Database connectivity
+- Read/write operations
+- Volume persistence
+- Script executability
 
 **Test Output**:
 ```
-🧪 Docker Containers Test Suite
+Docker Containers Test Suite
 ================================
 
-🐳 Docker Tests
+Docker Tests
 ---------------
 ✓ Docker daemon is running
 
-🐘 PostgreSQL Tests
+PostgreSQL Tests
 -------------------
 ✓ PostgreSQL container is running
 ✓ PostgreSQL health check passes
@@ -456,14 +456,14 @@ Total:  30
 Passed: 30
 Failed: 0
 
-✅ All tests passed!
+All tests passed!
 ```
 
-[📖 Full Testing Documentation](test/README.md)
+[Full Testing Documentation](test/README.md)
 
 ---
 
-## 📊 Resource Management
+## Resource Management
 
 All services have default resource limits to prevent system exhaustion:
 
@@ -555,7 +555,7 @@ sudo sysctl -w vm.max_map_count=262144
 
 ---
 
-## 🏗 Architecture
+## Architecture
 
 ### Design Philosophy
 
@@ -595,7 +595,7 @@ This repository follows these principles:
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
@@ -625,20 +625,20 @@ git commit -m "Improve PostgreSQL configuration"
 
 ---
 
-## 📜 License
+## License
 
 This project uses a copyleft license. See [LICENSE](LICENSE.md) for details.
 
 ---
 
-## 📚 Additional Resources
+## Additional Resources
 
 - [docs/](docs/) - Additional documentation
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
 
 ---
 
-## 💬 Support
+## Support
 
 - **Issues**: [GitHub Issues](https://github.com/Arkiralor/DockerContainers/issues)
 - **Documentation**: See `docs/` directory
