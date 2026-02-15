@@ -23,13 +23,13 @@ services:
         max-size: "10m"
         max-file: "3"
 
-    # Uncomment to set resource limits
-    # deploy:
-    #   resources:
-    #     limits:
-    #       memory: 512m
-    #     reservations:
-    #       memory: 256m
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: '0.5'
+        reservations:
+          memory: 256m
 
     # Uncomment to add networks
     # networks:

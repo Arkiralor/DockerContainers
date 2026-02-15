@@ -10,7 +10,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/data
       # Uncomment to mount custom config
       # - ./config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
     restart: unless-stopped
@@ -25,13 +25,13 @@ services:
         max-size: "10m"
         max-file: "3"
 
-    # Uncomment to set resource limits
-    # deploy:
-    #   resources:
-    #     limits:
-    #       memory: 1g
-    #     reservations:
-    #       memory: 512m
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: '1.0'
+        reservations:
+          memory: 512m
 
     # Uncomment to add networks
     # networks:

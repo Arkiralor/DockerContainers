@@ -1,0 +1,55 @@
+# YAML Linting Configuration
+# For Docker Compose files and other YAML configurations
+
+rules:
+  # Line length - accommodate Docker Compose readability
+  line-length:
+    max: 120
+    level: warning
+
+  # Indentation - enforce 2-space indentation as used in codebase
+  indentation:
+    spaces: 2
+    indent-sequences: true
+    check-multi-line-strings: false
+
+  # Comments - require space after hash
+  comments:
+    min-spaces-from-content: 1
+
+  # Document start - allow files without explicit document start
+  document-start:
+    present: false
+
+  # Empty lines
+  empty-lines:
+    max: 2
+    max-start: 0
+    max-end: 1
+
+  # Trailing spaces
+  trailing-spaces: enable
+
+  # Key ordering - disabled for Docker Compose flexibility
+  key-ordering: disable
+
+  # Truthy values - allow 'yes/no' for Docker Compose
+  truthy:
+    allowed-values: ["true", "false", "yes", "no"]
+    check-keys: false
+
+  # Brackets - allow both styles
+  brackets:
+    max-spaces-inside: 1
+    max-spaces-inside-empty: 0
+
+  # Braces
+  braces:
+    max-spaces-inside: 1
+    max-spaces-inside-empty: 0
+
+# Ignore patterns
+ignore: |
+  .env*
+  data/
+  *.log

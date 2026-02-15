@@ -14,10 +14,10 @@ services=("redis" "postgresql" "opensearch")
 start_service() {
     local service=$1
     echo "📦 Starting ${service}..."
-    
+
     if [ -d "$service" ] && [ -f "${service}/docker-compose.yml" ]; then
         cd "$service"
-        
+
         # Check if .env file exists
         if [ ! -f ".env" ]; then
             echo "⚠️  No .env file found for ${service}. Creating from .env.example..."
@@ -29,20 +29,20 @@ start_service() {
                 return 1
             fi
         fi
-        
+
         # Start the service
         if command -v docker-compose &> /dev/null; then
             docker-compose up -d
         else
             docker compose up -d
         fi
-        
+
         if [ $? -eq 0 ]; then
             echo "✅ ${service} started successfully"
         else
             echo "❌ Failed to start ${service}"
         fi
-        
+
         cd ..
     else
         echo "⚠️  Service directory ${service} not found or missing docker-compose.yml"
@@ -53,7 +53,7 @@ start_service() {
 wait_for_services() {
     echo "⏳ Waiting for services to be ready..."
     sleep 5
-    
+
     echo "📋 Service status:"
     ./scripts/status.sh
 }
@@ -65,15 +65,15 @@ main() {
         echo "❌ Please run this script from the repository root directory"
         exit 1
     fi
-    
+
     # Start services in order (redis first, then postgresql, then opensearch)
     for service in "${services[@]}"; do
         start_service "$service"
         echo ""
     done
-    
+
     wait_for_services
-    
+
     echo ""
     echo "🎉 All services startup initiated!"
     echo "Use './scripts/status.sh' to check service health"

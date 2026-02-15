@@ -38,3 +38,8 @@ __pycache__/
 
 # Ignore init scripts outputs
 postgresql/initdb.d/*.out
+
+
+## Projects-specific ignores
+CLAUDE.md
+IMPROMENTS.md

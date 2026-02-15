@@ -14,12 +14,12 @@ check_docker() {
         echo "❌ Docker is not installed. Please install Docker first."
         exit 1
     fi
-    
+
     if ! docker info &> /dev/null; then
         echo "❌ Docker is not running. Please start Docker."
         exit 1
     fi
-    
+
     echo "✅ Docker is installed and running"
 }
 
@@ -36,9 +36,9 @@ check_docker_compose() {
 # Function to create .env files from examples
 setup_env_files() {
     echo "📄 Setting up environment files..."
-    
+
     services=("opensearch" "postgresql" "redis")
-    
+
     for service in "${services[@]}"; do
         if [ -f "${service}/.env.example" ] && [ ! -f "${service}/.env" ]; then
             echo "Creating .env file for ${service}..."
@@ -53,9 +53,9 @@ setup_env_files() {
 # Function to create data directories
 create_data_dirs() {
     echo "📁 Creating data directories..."
-    
+
     services=("opensearch" "postgresql" "redis")
-    
+
     for service in "${services[@]}"; do
         data_dir="${service}/data"
         if [ ! -d "$data_dir" ]; then

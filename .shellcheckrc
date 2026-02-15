@@ -1,0 +1,23 @@
+# ShellCheck Configuration
+# For bash scripts in scripts/ and test/ directories
+
+# Disable specific checks that are not relevant for this project
+# SC2034: Variable appears unused (many variables are used in sourced scripts)
+# SC1091: Not following sourced files (we don't need to analyze sourced files)
+# SC2162: read without -r will mangle backslashes (allow for interactive scripts)
+# SC2181: Check exit code directly (allow $? usage for clarity)
+# SC2155: Declare and assign separately (allow combined for brevity)
+# SC2086: Double quote to prevent globbing (allow some intentional cases)
+# SC2164: Use 'cd ... || exit' (allow simple cd in controlled environments)
+# SC2103: Use subshell to avoid cd back (allow simple cd patterns)
+# SC2012: Use find instead of ls (allow ls for simple cases)
+# SC2010: Don't use ls | grep (allow for legacy compatibility)
+# SC2035: Use ./*glob* so names with dashes won't become options
+
+disable=SC2034,SC1091,SC2162,SC2181,SC2155,SC2164,SC2103,SC2012,SC2010,SC2035,SC2086,SC2207
+
+# External sources (if any)
+external-sources=false
+
+# Check sourced files in the same directory
+source-path=SCRIPTDIR

@@ -14,23 +14,23 @@ services=("opensearch" "postgresql" "redis")
 stop_service() {
     local service=$1
     echo "📦 Stopping ${service}..."
-    
+
     if [ -d "$service" ] && [ -f "${service}/docker-compose.yml" ]; then
         cd "$service"
-        
+
         # Stop the service
         if command -v docker-compose &> /dev/null; then
             docker-compose down
         else
             docker compose down
         fi
-        
+
         if [ $? -eq 0 ]; then
             echo "✅ ${service} stopped successfully"
         else
             echo "❌ Failed to stop ${service}"
         fi
-        
+
         cd ..
     else
         echo "⚠️  Service directory ${service} not found or missing docker-compose.yml"
@@ -57,15 +57,15 @@ main() {
         echo "❌ Please run this script from the repository root directory"
         exit 1
     fi
-    
+
     # Stop services
     for service in "${services[@]}"; do
         stop_service "$service"
         echo ""
     done
-    
+
     cleanup
-    
+
     echo ""
     echo "🎉 All services stopped!"
     echo "Use './scripts/start-all.sh' to start services again"

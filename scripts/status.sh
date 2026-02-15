@@ -18,14 +18,14 @@ check_docker() {
 get_service_status() {
     local service=$1
     local compose_file="${service}/docker-compose.yml"
-    
+
     if [ -d "$service" ] && [ -f "$compose_file" ]; then
         echo ""
         echo "🔍 ${service^^} Service:"
         echo "-------------------"
-        
+
         cd "$service"
-        
+
         # Get container status
         if command -v docker-compose &> /dev/null; then
             containers=$(docker-compose ps --services 2>/dev/null)
@@ -34,7 +34,7 @@ get_service_status() {
             containers=$(docker compose ps --services 2>/dev/null)
             docker compose ps
         fi
-        
+
         # Check if containers are running
         if [ $? -eq 0 ] && [ -n "$containers" ]; then
             echo ""
@@ -46,12 +46,12 @@ get_service_status() {
                 else
                     container_name=$(docker compose ps -q "$container" 2>/dev/null)
                 fi
-                
+
                 if [ -n "$container_name" ]; then
                     # Get container info
                     container_info=$(docker inspect --format='{{.State.Status}}' "$container_name" 2>/dev/null)
                     port_info=$(docker port "$container_name" 2>/dev/null)
-                    
+
                     echo "  • Container: $container"
                     echo "    Status: $container_info"
                     if [ -n "$port_info" ]; then
@@ -62,7 +62,7 @@ get_service_status() {
         else
             echo "⚠️  No containers running for ${service}"
         fi
-        
+
         cd ..
     else
         echo ""
@@ -75,12 +75,12 @@ show_resource_usage() {
     echo ""
     echo "💾 Resource Usage:"
     echo "=================="
-    
+
     # Show Docker system info
     echo ""
     echo "🖥️  System Summary:"
     docker system df
-    
+
     echo ""
     echo "📈 Running Containers:"
     docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}\t{{.BlockIO}}"
@@ -101,15 +101,15 @@ show_commands() {
 # Main function
 main() {
     check_docker
-    
+
     # Array of services
     services=("redis" "postgresql" "opensearch")
-    
+
     # Check status of each service
     for service in "${services[@]}"; do
         get_service_status "$service"
     done
-    
+
     show_resource_usage
     show_commands
 }

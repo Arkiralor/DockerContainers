@@ -1,0 +1,64 @@
+# Markdown Linting Configuration
+# For documentation files
+
+# Default state for all rules
+default: true
+
+# Customize specific rules
+
+# MD013: Line length - be very flexible for documentation
+MD013:
+  line_length: 300
+  code_blocks: false
+  tables: false
+  headings: false
+  # headers: false
+
+# MD024: Multiple headings with the same content - allow in different sections
+MD024:
+  siblings_only: true
+
+# MD033: Inline HTML - allow for badge images and formatting
+MD033:
+  allowed_elements: ["img", "br", "kbd", "sub", "sup"]
+
+# MD041: First line in file should be top level heading - not required
+MD041: false
+
+# MD046: Code block style - prefer fenced code blocks
+MD046:
+  style: "fenced"
+
+# MD048: Code fence style - prefer backticks
+MD048:
+  style: "backtick"
+
+# MD036: Emphasis used instead of heading - allow for documentation
+MD036: false
+
+# MD040: Fenced code blocks should have a language - allow flexibility
+MD040: false
+
+# MD034: Bare URL used - allow bare URLs in certain contexts
+MD034: false
+
+# MD022: Headings should be surrounded by blank lines - be more lenient
+MD022: false
+
+# MD032: Lists should be surrounded by blank lines - be more lenient
+MD032: false
+
+# MD031: Fenced code blocks should be surrounded by blank lines - be more lenient
+MD031: false
+
+# MD010: Hard tabs - convert to spaces
+MD010: false
+
+# MD060: Table formatting - be more flexible
+MD060: false
+
+# MD042: No empty links - allow empty links for badges
+MD042: false
+
+# MD051: Link fragments should be valid - allow for documentation flexibility
+MD051: false

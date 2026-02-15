@@ -72,10 +72,10 @@ cd postgresql
 docker-compose ps
 
 # Check logs
-docker-compose logs db
+docker-compose logs postgres
 
 # Test connection
-docker-compose exec db psql -U postgres -d postgres
+docker-compose exec postgres psql -U postgres -d postgres
 ```
 
 **Solutions**:
@@ -97,7 +97,7 @@ rm -rf postgresql/data
 docker-compose up -d
 
 # Check initialization logs
-docker-compose logs db
+docker-compose logs postgres
 ```
 
 ### Password Authentication Failed  

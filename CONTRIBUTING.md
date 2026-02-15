@@ -76,4 +76,5 @@ If you need help or have questions:
 
 ## Code of Conduct
 
-Please be respectful and professional in all interactions. We're here to learn and help each other build better Docker setups.
+Please be respectful and professional in all interactions. We're here to learn and help each
+other build better Docker setups.

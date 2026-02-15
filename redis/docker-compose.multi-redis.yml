@@ -123,13 +123,13 @@ services:
       - REDIS_REPLICATION_MODE=master
       - REDIS_DB_NAME=miscellaneous
 
-    # Uncomment to set resource limits for any service
-    # deploy:
-    #   resources:
-    #     limits:
-    #       memory: 512m
-    #     reservations:
-    #       memory: 256m
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: '0.5'
+        reservations:
+          memory: 256m
 
     # Uncomment to add networks
     # networks:
