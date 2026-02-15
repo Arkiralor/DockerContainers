@@ -6,7 +6,7 @@
 [![Docker](https://img.shields.io/badge/docker-compose-blue.svg)](https://docs.docker.com/compose/)
 [![Rating](https://img.shields.io/badge/rating-9.5%2F10-brightgreen.svg)](#)
 
-This repository provides production-quality Docker Compose setups for popular open-source services used in **local development only**. Each service is standalone, battle-tested, and ready to use out of the box.
+This repository provides high-grade Docker Compose setups for popular open-source services to be used in **local development only**. Each service is standalone, battle-tested, and ready to use out of the box.
 
 ## Services
 
