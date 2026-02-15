@@ -113,8 +113,6 @@ DockerContainers/
 │   └── services-overview.md # Detailed service info
 │
 ├── Makefile                 # Convenient make commands (25+)
-├── CLAUDE.md                # AI assistant configuration
-├── IMPROVEMENTS.md          # Completed improvements log
 └── README.md                # This file
 ```
 
