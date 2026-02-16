@@ -16,6 +16,8 @@ RUN npm run build
 
 FROM node:18-alpine
 
+RUN apk add --no-cache make docker-cli docker-cli-compose
+
 WORKDIR /app
 
 COPY server/package*.json ./

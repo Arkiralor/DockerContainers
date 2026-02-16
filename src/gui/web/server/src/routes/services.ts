@@ -14,7 +14,7 @@ async function runMakeCommand(command: string): Promise<{ success: boolean; outp
   try {
     const { stdout, stderr } = await execAsync(`make ${command}`, {
       cwd: REPO_ROOT,
-      timeout: 30000
+      timeout: 60000
     })
     logger.info(`Make command '${command}' executed successfully`)
     return { success: true, output: stdout, error: stderr }
@@ -40,7 +40,7 @@ async function getContainerStatus(containerName: string) {
       running: container.State.toLowerCase() === 'running',
       status: container.Status,
       state: container.State,
-      id: container.Id
+      containerId: container.Id
     }
   } catch (error) {
     logger.error(`Error getting status for ${containerName}:`, error)
@@ -104,6 +104,13 @@ router.post('/:serviceId/start', async (req, res) => {
       return res.status(404).json({ error: 'Service not found' })
     }
 
+    // Dashboards is controlled by OpenSearch compose file
+    if (serviceId === 'dashboards') {
+      return res.status(400).json({
+        error: 'OpenSearch Dashboards starts automatically with OpenSearch. Please start OpenSearch instead.'
+      })
+    }
+
     const makeCommands = service.makeCommands as { start?: string; stop?: string; logs?: string } | undefined
 
     if (!makeCommands || !makeCommands.start) {
@@ -125,6 +132,13 @@ router.post('/:serviceId/stop', async (req, res) => {
 
     if (!service) {
       return res.status(404).json({ error: 'Service not found' })
+    }
+
+    // Dashboards is controlled by OpenSearch compose file
+    if (serviceId === 'dashboards') {
+      return res.status(400).json({
+        error: 'OpenSearch Dashboards stops automatically with OpenSearch. Please stop OpenSearch instead.'
+      })
     }
 
     const makeCommands = service.makeCommands as { start?: string; stop?: string; logs?: string } | undefined
@@ -157,7 +171,7 @@ router.get('/:serviceId/logs', async (req, res) => {
       return res.json({ logs: 'Container does not exist' })
     }
 
-    const logs = await dockerService.getContainerLogs(status.id!, tail)
+    const logs = await dockerService.getContainerLogs(status.containerId!, tail)
     res.json({ logs })
   } catch (error) {
     logger.error(`Error getting logs for service ${req.params.serviceId}:`, error)
