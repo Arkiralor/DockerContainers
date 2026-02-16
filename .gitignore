@@ -43,3 +43,5 @@ src/postgresql/initdb.d/*.out
 ## Projects-specific ignores
 CLAUDE.md
 IMPROVENTS.md
+dev-tools/
+dev_tools/
