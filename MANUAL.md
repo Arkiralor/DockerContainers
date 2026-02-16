@@ -11,7 +11,7 @@ DockerContainers provides ready-to-use Docker Compose configurations for popular
 This project is designed specifically for **local development environments**
 and offers a quick way to spin up these services without complex setup.
 
-⚠️ **Important**: This is for local development only, not production use.
+**Important**: This is for local development only, not production use.
 
 ## What's Included
 
@@ -216,7 +216,7 @@ make shell-opensearch
 If you only need PostgreSQL:
 
 ```bash
-cd postgresql/
+cd src/postgresql/
 docker compose up -d
 ```
 
@@ -227,21 +227,21 @@ Connect at `localhost:5432` with credentials above.
 For Redis (single instance):
 
 ```bash
-cd redis/
+cd src/redis/
 docker compose up -d
 ```
 
 For Redis (multi-instance):
 
 ```bash
-cd redis/
+cd src/redis/
 docker compose -f docker-compose.multi-redis.yml up -d
 ```
 
 ### OpenSearch Only
 
 ```bash
-cd opensearch/
+cd src/opensearch/
 docker compose up -d
 ```
 
@@ -253,9 +253,9 @@ Access OpenSearch at `localhost:9200` and Dashboards at `localhost:5601`.
 
 All service data persists in Docker volumes, so your data survives container restarts. Data is stored in:
 
-- `postgresql/data/` - PostgreSQL database files
-- `redis/data/` - Redis persistence files
-- `opensearch/data/` - OpenSearch indices and data
+- `src/postgresql/data/` - PostgreSQL database files
+- `src/redis/data/` - Redis persistence files
+- `src/opensearch/data/` - OpenSearch indices and data
 
 ### Creating Backups
 
@@ -296,16 +296,16 @@ cp postgresql/.env.example postgresql/.env
 
 Advanced configuration files are in each service's `config/` directory:
 
-- `postgresql/config/postgresql.conf` - PostgreSQL settings
-- `redis/config/redis.conf` - Redis configuration
-- `opensearch/config/opensearch.yml` - OpenSearch settings
+- `src/postgresql/config/postgresql.conf` - PostgreSQL settings
+- `src/redis/config/redis.conf` - Redis configuration
+- `src/opensearch/config/opensearch.yml` - OpenSearch settings
 
 ## Multi-Redis Setup
 
 For applications needing multiple Redis instances:
 
 ```bash
-cd redis/
+cd src/redis/
 docker compose -f docker-compose.multi-redis.yml up -d
 ```
 
@@ -524,7 +524,7 @@ make stop
 To completely remove all services and data:
 
 ```bash
-make clean  # ⚠️  This deletes ALL data!
+make clean  # WARNING: This deletes ALL data!
 ```
 
 To remove Docker images:

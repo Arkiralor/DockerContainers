@@ -66,9 +66,9 @@ lint-markdown: ## Lint markdown files
 
 lint-compose: ## Validate Docker Compose files
 	@echo "Validating Docker Compose files..."
-	@cd postgresql && docker-compose config --quiet
-	@cd redis && docker-compose config --quiet
-	@cd opensearch && docker-compose config --quiet
+	@cd src/postgresql && docker-compose config --quiet
+	@cd src/redis && docker-compose config --quiet
+	@cd src/opensearch && docker-compose config --quiet
 	@echo "Docker Compose files are valid"
 
 clean: ## Remove all containers, volumes, and data (WARNING: DATA LOSS)
@@ -78,48 +78,48 @@ clean: ## Remove all containers, volumes, and data (WARNING: DATA LOSS)
 		echo "🧹 Cleaning up..."; \
 		./scripts/stop-all.sh; \
 		docker volume rm postgresql_postgres_data redis_redis_data opensearch_opensearch_data 2>/dev/null || true; \
-		rm -rf postgresql/data redis/data opensearch/data 2>/dev/null || true; \
+		rm -rf src/postgresql/data src/redis/data src/opensearch/data 2>/dev/null || true; \
 		echo "✅ Cleanup complete"; \
 	else \
 		echo "❌ Cleanup cancelled"; \
 	fi
 
 logs-redis: ## Show Redis logs
-	@cd redis && docker-compose logs -f
+	@cd src/redis && docker-compose logs -f
 
 logs-postgres: ## Show PostgreSQL logs
-	@cd postgresql && docker-compose logs -f
+	@cd src/postgresql && docker-compose logs -f
 
 logs-opensearch: ## Show OpenSearch logs
-	@cd opensearch && docker-compose logs -f
+	@cd src/opensearch && docker-compose logs -f
 
 logs-dashboards: ## Show OpenSearch Dashboards logs
-	@cd opensearch && docker-compose logs -f opensearch-dashboards
+	@cd src/opensearch && docker-compose logs -f opensearch-dashboards
 
 # Individual service commands
 start-redis: ## Start only Redis
 	@echo "▶️  Starting Redis..."
-	@cd redis && docker-compose up -d
+	@cd src/redis && docker-compose up -d
 
 start-postgres: ## Start only PostgreSQL
 	@echo "▶️  Starting PostgreSQL..."
-	@cd postgresql && docker-compose up -d
+	@cd src/postgresql && docker-compose up -d
 
 start-opensearch: ## Start only OpenSearch
 	@echo "▶️  Starting OpenSearch..."
-	@cd opensearch && docker-compose up -d
+	@cd src/opensearch && docker-compose up -d
 
 stop-redis: ## Stop Redis
 	@echo "⏸️  Stopping Redis..."
-	@cd redis && docker-compose stop
+	@cd src/redis && docker-compose stop
 
 stop-postgres: ## Stop PostgreSQL
 	@echo "⏸️  Stopping PostgreSQL..."
-	@cd postgresql && docker-compose stop
+	@cd src/postgresql && docker-compose stop
 
 stop-opensearch: ## Stop OpenSearch
 	@echo "⏸️  Stopping OpenSearch..."
-	@cd opensearch && docker-compose stop
+	@cd src/opensearch && docker-compose stop
 
 restart-redis: stop-redis start-redis ## Restart Redis
 	@echo "🔄 Redis restarted"
@@ -133,21 +133,21 @@ restart-opensearch: stop-opensearch start-opensearch ## Restart OpenSearch
 # Multi-Redis specific
 start-multi-redis: ## Start multi-instance Redis setup
 	@echo "▶️  Starting multi-instance Redis..."
-	@cd redis && docker-compose -f docker-compose.multi-redis.yml up -d
+	@cd src/redis && docker-compose -f docker-compose.multi-redis.yml up -d
 
 stop-multi-redis: ## Stop multi-instance Redis setup
 	@echo "⏸️  Stopping multi-instance Redis..."
-	@cd redis && docker-compose -f docker-compose.multi-redis.yml stop
+	@cd src/redis && docker-compose -f docker-compose.multi-redis.yml stop
 
 # Development helpers
 shell-redis: ## Open Redis CLI
-	@cd redis && docker-compose exec redis redis-cli
+	@cd src/redis && docker-compose exec redis redis-cli
 
 shell-postgres: ## Open PostgreSQL shell
-	@cd postgresql && docker-compose exec postgres psql -U postgres -d elay-local
+	@cd src/postgresql && docker-compose exec postgres psql -U postgres -d elay-local
 
 shell-opensearch: ## Open bash shell in OpenSearch container
-	@cd opensearch && docker-compose exec opensearch bash
+	@cd src/opensearch && docker-compose exec opensearch bash
 
 # Quick status checks
 ps: ## Show running containers (short format)

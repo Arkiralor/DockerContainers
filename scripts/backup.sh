@@ -23,7 +23,7 @@ create_backup_dir() {
 backup_postgresql() {
     echo "🐘 Backing up PostgreSQL..."
 
-    local service_dir="postgresql"
+    local service_dir="src/postgresql"
     local backup_file="${BACKUP_DIR}/postgresql_${TIMESTAMP}.sql"
 
     if [ -d "$service_dir" ]; then
@@ -47,7 +47,7 @@ backup_postgresql() {
             fi
 
             # Create database dump
-            docker exec "$container_id" pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" > "../$backup_file"
+            docker exec "$container_id" pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" > "../../$backup_file"
 
             if [ $? -eq 0 ]; then
                 echo "✅ PostgreSQL backup created: $backup_file"
@@ -58,7 +58,7 @@ backup_postgresql() {
             echo "⚠️  PostgreSQL container not running, skipping database backup"
         fi
 
-        cd ..
+        cd ../..
     fi
 }
 
@@ -66,7 +66,7 @@ backup_postgresql() {
 backup_redis() {
     echo "🔴 Backing up Redis..."
 
-    local service_dir="redis"
+    local service_dir="src/redis"
     local backup_file="${BACKUP_DIR}/redis_${TIMESTAMP}.rdb"
 
     if [ -d "$service_dir" ]; then
@@ -87,7 +87,7 @@ backup_redis() {
             sleep 2
 
             # Copy the dump file
-            docker cp "${container_id}:/data/dump.rdb" "../$backup_file"
+            docker cp "${container_id}:/data/dump.rdb" "../../$backup_file"
 
             if [ $? -eq 0 ]; then
                 echo "✅ Redis backup created: $backup_file"
@@ -98,7 +98,7 @@ backup_redis() {
             echo "⚠️  Redis container not running, skipping backup"
         fi
 
-        cd ..
+        cd ../..
     fi
 }
 
@@ -106,7 +106,7 @@ backup_redis() {
 backup_opensearch() {
     echo "🔍 Backing up OpenSearch..."
 
-    local service_dir="opensearch"
+    local service_dir="src/opensearch"
     local backup_dir="${BACKUP_DIR}/opensearch_${TIMESTAMP}"
 
     if [ -d "$service_dir" ]; then
@@ -121,11 +121,11 @@ backup_opensearch() {
 
         if [ -n "$container_id" ]; then
             # Create backup directory for OpenSearch
-            mkdir -p "../$backup_dir"
+            mkdir -p "../../$backup_dir"
 
             # Copy data directory if it exists
             if [ -d "data" ]; then
-                cp -r data "../$backup_dir/"
+                cp -r data "../../$backup_dir/"
                 echo "✅ OpenSearch data backup created: $backup_dir"
             else
                 echo "⚠️  OpenSearch data directory not found"
@@ -133,19 +133,19 @@ backup_opensearch() {
 
             # Also backup configuration
             if [ -d "config" ]; then
-                cp -r config "../$backup_dir/"
+                cp -r config "../../$backup_dir/"
                 echo "✅ OpenSearch config backup created: $backup_dir"
             fi
         else
             echo "⚠️  OpenSearch container not running, creating data directory backup only"
             if [ -d "data" ]; then
-                mkdir -p "../$backup_dir"
-                cp -r data "../$backup_dir/"
+                mkdir -p "../../$backup_dir"
+                cp -r data "../../$backup_dir/"
                 echo "✅ OpenSearch data directory backup created: $backup_dir"
             fi
         fi
 
-        cd ..
+        cd ../..
     fi
 }
 
@@ -160,10 +160,10 @@ backup_configurations() {
         --exclude='*/data' \
         --exclude='*/backups' \
         --exclude='*/.env' \
-        */config/ \
-        */.env.example \
-        */docker-compose.yml \
-        */README.md \
+        src/*/config/ \
+        src/*/.env.example \
+        src/*/docker-compose.yml \
+        src/*/README.md \
         scripts/ \
         README.md \
         CONTRIBUTING.md \

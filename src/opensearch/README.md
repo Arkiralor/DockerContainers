@@ -52,13 +52,13 @@ OPENSEARCH_INITIAL_ADMIN_PASSWORD=YourStrongPassword1!
 
 ## Features
 
-### ✅ Complete Search Platform
+### Complete Search Platform
 
 Two integrated components:
 - **OpenSearch**: Distributed search and analytics engine (Elasticsearch fork)
 - **OpenSearch Dashboards**: Web UI for visualization and management (Kibana fork)
 
-### ✅ Persistent Data Storage
+### Persistent Data Storage
 
 Data persists across restarts:
 - **Volume**: `opensearch_data`
@@ -70,7 +70,7 @@ Data persists across restarts:
 docker volume inspect opensearch_opensearch_data
 ```
 
-### ✅ Health Checks
+### Health Checks
 
 Automatic health monitoring:
 - **OpenSearch**: Cluster health endpoint
@@ -83,14 +83,14 @@ Automatic health monitoring:
 curl http://localhost:9200/_cluster/health?pretty
 ```
 
-### ✅ Single-Node Cluster
+### Single-Node Cluster
 
 Configured for local development:
 - Single node (no clustering complexity)
 - Security disabled for convenience
 - Memory lock enabled for performance
 
-### ✅ Resource Limits
+### Resource Limits
 
 Default limits for stability:
 
@@ -99,7 +99,7 @@ Default limits for stability:
 | **Memory** | 2 GB | 1 GB |
 | **CPU** | 1.0 core | - |
 
-### ✅ Custom Configuration
+### Custom Configuration
 
 Configuration stored in `config/opensearch.yml`:
 
@@ -120,7 +120,7 @@ vim config/opensearch.yml
 make restart-opensearch
 ```
 
-### ✅ Service Dependencies
+### Service Dependencies
 
 OpenSearch Dashboards waits for OpenSearch to be healthy before starting:
 ```yaml
@@ -693,10 +693,10 @@ curl http://localhost:9200/_nodes/hot_threads
 ### For Local Development
 
 Default configuration prioritizes convenience:
-- ✅ Security plugin disabled
-- ✅ No authentication required
-- ✅ HTTP (no HTTPS)
-- ✅ Simple operation
+- Security plugin disabled
+- No authentication required
+- HTTP (no HTTPS)
+- Simple operation
 
 This is **perfect for local development** but **not for production**.
 
@@ -709,9 +709,9 @@ To enable security features:
 plugins.security.disabled: false
 ```
 
-2. **Generate certificates**
-3. **Configure users and roles**
-4. **Update application connections**
+1. **Generate certificates**
+2. **Configure users and roles**
+3. **Update application connections**
 
 See [OpenSearch Security Documentation](https://opensearch.org/docs/latest/security/) for details.
 

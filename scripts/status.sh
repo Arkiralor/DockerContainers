@@ -93,9 +93,9 @@ show_commands() {
     echo "==================="
     echo "  • Start all services:     ./scripts/start-all.sh"
     echo "  • Stop all services:      ./scripts/stop-all.sh"
-    echo "  • View logs (service):    cd <service> && docker-compose logs -f"
-    echo "  • Restart service:        cd <service> && docker-compose restart"
-    echo "  • Update service:         cd <service> && docker-compose pull && docker-compose up -d"
+    echo "  • View logs (service):    cd src/<service> && docker-compose logs -f"
+    echo "  • Restart service:        cd src/<service> && docker-compose restart"
+    echo "  • Update service:         cd src/<service> && docker-compose pull && docker-compose up -d"
 }
 
 # Main function
@@ -103,7 +103,7 @@ main() {
     check_docker
 
     # Array of services
-    services=("redis" "postgresql" "opensearch")
+    services=("src/redis" "src/postgresql" "src/opensearch")
 
     # Check status of each service
     for service in "${services[@]}"; do

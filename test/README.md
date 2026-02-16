@@ -26,50 +26,50 @@ cd test
 
 The automated test suite includes **30+ tests** covering:
 
-#### 🐳 Docker Tests
-- ✅ Docker daemon is running
-- ✅ Docker Compose is available
+#### Docker Tests
+- Docker daemon is running
+- Docker Compose is available
 
-#### 🐘 PostgreSQL Tests
-- ✅ Container is running
-- ✅ Health check passes
-- ✅ Accepts connections
-- ✅ Read/write operations work
-- ✅ Port 5432 is accessible
-- ✅ Volume exists and persists data
+#### PostgreSQL Tests
+- Container is running
+- Health check passes
+- Accepts connections
+- Read/write operations work
+- Port 5432 is accessible
+- Volume exists and persists data
 
-#### 🔴 Redis Tests
-- ✅ Container is running
-- ✅ Health check passes (`redis-cli ping`)
-- ✅ Read/write operations work
-- ✅ Port 6379 is accessible
-- ✅ Volume exists and persists data
+#### Redis Tests
+- Container is running
+- Health check passes (`redis-cli ping`)
+- Read/write operations work
+- Port 6379 is accessible
+- Volume exists and persists data
 
-#### 🔍 OpenSearch Tests
-- ✅ Container is running
-- ✅ Health endpoint responds
-- ✅ Cluster status is healthy
-- ✅ Port 9200 is accessible
-- ✅ Dashboards container is running
-- ✅ Dashboards port 5601 is accessible
-- ✅ Volume exists and persists data
+#### OpenSearch Tests
+- Container is running
+- Health endpoint responds
+- Cluster status is healthy
+- Port 9200 is accessible
+- Dashboards container is running
+- Dashboards port 5601 is accessible
+- Volume exists and persists data
 
-#### 📜 Script Tests
-- ✅ All management scripts exist
-- ✅ All scripts are executable
-- ✅ Scripts have correct permissions
+#### Script Tests
+- All management scripts exist
+- All scripts are executable
+- Scripts have correct permissions
 
 ### Test Output Example
 
 ```
-🧪 Docker Containers Test Suite
+Docker Containers Test Suite
 ================================
 
-🐳 Docker Tests
+Docker Tests
 ---------------
 ✓ Docker daemon is running
 
-🐘 PostgreSQL Tests
+PostgreSQL Tests
 -------------------
 ✓ PostgreSQL container is running
 ✓ PostgreSQL health check passes
@@ -77,7 +77,7 @@ The automated test suite includes **30+ tests** covering:
 ✓ PostgreSQL port 5432 is accessible
 ✓ PostgreSQL volume exists
 
-🔴 Redis Tests
+Redis Tests
 --------------
 ✓ Redis container is running
 ✓ Redis health check passes
@@ -85,7 +85,7 @@ The automated test suite includes **30+ tests** covering:
 ✓ Redis port 6379 is accessible
 ✓ Redis volume exists
 
-🔍 OpenSearch Tests
+OpenSearch Tests
 -------------------
 ✓ OpenSearch container is running
 ✓ OpenSearch health endpoint responds
@@ -95,7 +95,7 @@ The automated test suite includes **30+ tests** covering:
 ✓ OpenSearch Dashboards port 5601 is accessible
 ✓ OpenSearch volume exists
 
-📜 Script Tests
+Script Tests
 ---------------
 ✓ Backup script exists and is executable
 ✓ Restore script exists and is executable
@@ -111,7 +111,7 @@ Total:  30
 Passed: 30
 Failed: 0
 
-✅ All tests passed!
+All tests passed!
 ```
 
 ## Prerequisites
@@ -332,13 +332,13 @@ test_new_service_health() {
 }
 ```
 
-2. **Add to main() function:**
+1. **Add to main() function:**
 ```bash
 main() {
     # ... existing tests ...
 
     # New service tests
-    echo "🆕 New Service Tests"
+    echo "New Service Tests"
     echo "-------------------"
     test_new_service_health
     echo ""
@@ -347,7 +347,7 @@ main() {
 }
 ```
 
-3. **Test your test:**
+1. **Test your test:**
 ```bash
 ./test/test.sh
 ```

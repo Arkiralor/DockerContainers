@@ -64,15 +64,15 @@ Ideal for complex applications needing isolated Redis instances for different pu
 | **miscellaneous** | 6383 | Miscellaneous tasks |
 
 **Key Benefits:**
-- ✅ Complete isolation between instances
-- ✅ Independent data persistence
-- ✅ Can run alongside single instance
-- ✅ Each has own resource limits
-- ✅ Perfect for microservices
+- Complete isolation between instances
+- Independent data persistence
+- Can run alongside single instance
+- Each has own resource limits
+- Perfect for microservices
 
 ## Features
 
-### ✅ Persistent Data Storage (RDB)
+### Persistent Data Storage (RDB)
 
 Data is saved to disk using Redis RDB snapshots:
 - **Volumes**: `redis_data` (single) or `<instance>_data` (multi)
@@ -88,7 +88,7 @@ docker volume inspect redis_redis_data
 docker volume ls | grep redis
 ```
 
-### ✅ Health Checks
+### Health Checks
 
 Automatic health monitoring using `redis-cli ping`:
 - **Interval**: Every 30 seconds
@@ -100,7 +100,7 @@ Automatic health monitoring using `redis-cli ping`:
 docker inspect redis | grep -A 10 Health
 ```
 
-### ✅ Custom Configuration
+### Custom Configuration
 
 To use custom Redis configuration:
 
@@ -123,19 +123,19 @@ tcp-keepalive 300
 EOF
 ```
 
-2. **Uncomment volume mount in docker-compose.yml:**
+1. **Uncomment volume mount in docker-compose.yml:**
 ```yaml
 volumes:
   - redis_data:/data
   - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro  # Uncomment
 ```
 
-3. **Restart:**
+1. **Restart:**
 ```bash
 make restart-redis
 ```
 
-### ✅ Resource Limits
+### Resource Limits
 
 Each Redis instance has default limits:
 
@@ -146,7 +146,7 @@ Each Redis instance has default limits:
 
 Prevents any instance from consuming excessive resources.
 
-### ✅ Logging
+### Logging
 
 Automatic log management:
 - **Driver**: json-file
@@ -356,7 +356,7 @@ DBSIZE
 # Flush current database
 FLUSHDB
 
-# Flush all databases (⚠️ WARNING: Deletes everything!)
+# Flush all databases (WARNING: Deletes everything!)
 FLUSHALL
 
 # Get Redis info
@@ -656,10 +656,10 @@ redis-cli --memkeys --memkeys-samples 1000
 ### For Local Development
 
 Default configuration is optimized for convenience:
-- ✅ No authentication required
-- ✅ Listen on localhost only
-- ✅ No SSL/TLS
-- ✅ Simple operation
+- No authentication required
+- Listen on localhost only
+- No SSL/TLS
+- Simple operation
 
 This is **perfect for local development** but **not for production**.
 
@@ -676,7 +676,7 @@ requirepass your_strong_password_here
 redis-cli -h localhost -p 6379 -a your_strong_password_here
 ```
 
-2. **Rename dangerous commands:**
+1. **Rename dangerous commands:**
 ```bash
 # In config/redis.conf
 rename-command FLUSHDB ""

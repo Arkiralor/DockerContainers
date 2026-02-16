@@ -53,38 +53,38 @@ check_service_running() {
     else
         container_id=$(docker compose ps -q "$service_name" 2>/dev/null)
     fi
-    cd ..
+    cd ../..
 
     [ -n "$container_id" ]
 }
 
 # PostgreSQL Tests
 test_postgres_running() {
-    check_service_running "postgresql" "postgres"
+    check_service_running "src/postgresql" "postgres"
     print_result "PostgreSQL container is running" $?
 }
 
 test_postgres_health() {
-    cd postgresql
+    cd src/postgresql
     if command -v docker-compose &> /dev/null; then
         docker-compose exec -T postgres pg_isready &> /dev/null
     else
         docker compose exec -T postgres pg_isready &> /dev/null
     fi
     local result=$?
-    cd ..
+    cd ../..
     print_result "PostgreSQL health check passes" $result
 }
 
 test_postgres_connection() {
-    cd postgresql
+    cd src/postgresql
     if command -v docker-compose &> /dev/null; then
         docker-compose exec -T postgres psql -U postgres -d elay-local -c "SELECT 1;" &> /dev/null
     else
         docker compose exec -T postgres psql -U postgres -d elay-local -c "SELECT 1;" &> /dev/null
     fi
     local result=$?
-    cd ..
+    cd ../..
     print_result "PostgreSQL accepts connections" $result
 }
 
@@ -100,24 +100,24 @@ test_postgres_volume() {
 
 # Redis Tests
 test_redis_running() {
-    check_service_running "redis" "redis"
+    check_service_running "src/redis" "redis"
     print_result "Redis container is running" $?
 }
 
 test_redis_health() {
-    cd redis
+    cd src/redis
     if command -v docker-compose &> /dev/null; then
         docker-compose exec -T redis redis-cli ping &> /dev/null
     else
         docker compose exec -T redis redis-cli ping &> /dev/null
     fi
     local result=$?
-    cd ..
+    cd ../..
     print_result "Redis health check passes" $result
 }
 
 test_redis_connection() {
-    cd redis
+    cd src/redis
     if command -v docker-compose &> /dev/null; then
         docker-compose exec -T redis redis-cli SET test_key "test_value" &> /dev/null
         docker-compose exec -T redis redis-cli GET test_key &> /dev/null
@@ -128,7 +128,7 @@ test_redis_connection() {
         docker compose exec -T redis redis-cli DEL test_key &> /dev/null
     fi
     local result=$?
-    cd ..
+    cd ../..
     print_result "Redis read/write operations work" $result
 }
 
@@ -144,7 +144,7 @@ test_redis_volume() {
 
 # OpenSearch Tests
 test_opensearch_running() {
-    check_service_running "opensearch" "opensearch"
+    check_service_running "src/opensearch" "opensearch"
     print_result "OpenSearch container is running" $?
 }
 
@@ -165,7 +165,7 @@ test_opensearch_port() {
 }
 
 test_opensearch_dashboards_running() {
-    check_service_running "opensearch" "opensearch-dashboards"
+    check_service_running "src/opensearch" "opensearch-dashboards"
     print_result "OpenSearch Dashboards container is running" $?
 }
 

@@ -64,7 +64,7 @@ make restart-postgres
 
 ## Features
 
-### ✅ Persistent Data Storage
+### Persistent Data Storage
 
 Data is stored in a Docker volume that persists across container restarts:
 - **Volume name**: `postgres_data`
@@ -76,7 +76,7 @@ Check volume:
 docker volume inspect postgresql_postgres_data
 ```
 
-### ✅ Health Checks
+### Health Checks
 
 Automatic health monitoring using `pg_isready`:
 - **Interval**: Every 30 seconds
@@ -88,7 +88,7 @@ View health status:
 docker inspect postgres | grep -A 10 Health
 ```
 
-### ✅ Initialization Scripts
+### Initialization Scripts
 
 Place SQL scripts in `initdb.d/` directory to automatically run on first startup:
 
@@ -114,7 +114,7 @@ docker volume rm postgresql_postgres_data
 make start-postgres
 ```
 
-### ✅ Custom Configuration
+### Custom Configuration
 
 To use custom PostgreSQL configuration:
 
@@ -128,19 +128,19 @@ maintenance_work_mem = 64MB
 EOF
 ```
 
-2. Uncomment volume mount in `docker-compose.yml`:
+1. Uncomment volume mount in `docker-compose.yml`:
 ```yaml
 volumes:
   - postgres_data:/var/lib/postgresql/data
   - ./config/postgresql.conf:/etc/postgresql/postgresql.conf:ro  # Uncomment this
 ```
 
-3. Restart service:
+1. Restart service:
 ```bash
 make restart-postgres
 ```
 
-### ✅ Resource Limits
+### Resource Limits
 
 Default resource limits prevent PostgreSQL from consuming all system resources:
 
@@ -151,7 +151,7 @@ Default resource limits prevent PostgreSQL from consuming all system resources:
 
 These can be adjusted in `docker-compose.yml` under `deploy.resources`.
 
-### ✅ Logging
+### Logging
 
 Logs are automatically managed with rotation:
 - **Driver**: json-file
@@ -522,10 +522,10 @@ ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
 ### For Local Development
 
 The default configuration is optimized for convenience:
-- ✅ Simple default password
-- ✅ Listen on localhost only
-- ✅ No SSL required
-- ✅ Trust local connections
+- Simple default password
+- Listen on localhost only
+- No SSL required
+- Trust local connections
 
 This is **perfect for local development** but **not for production**.
 
@@ -537,7 +537,7 @@ environment:
   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # Use .env file
 ```
 
-2. **Enable SSL:**
+1. **Enable SSL:**
 ```yaml
 command: >
   postgres
@@ -546,7 +546,7 @@ command: >
   -c ssl_key_file=/path/to/server.key
 ```
 
-3. **Restrict connections:**
+1. **Restrict connections:**
 Edit `pg_hba.conf` to limit access by IP or user.
 
 ## Advanced Topics

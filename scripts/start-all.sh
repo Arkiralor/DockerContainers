@@ -8,7 +8,7 @@ set -e
 echo "🚀 Starting all Docker services..."
 
 # Array of service directories
-services=("redis" "postgresql" "opensearch")
+services=("src/redis" "src/postgresql" "src/opensearch")
 
 # Function to start a service
 start_service() {

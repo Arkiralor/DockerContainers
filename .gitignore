@@ -37,9 +37,9 @@ __pycache__/
 *docker-compose.override.yml
 
 # Ignore init scripts outputs
-postgresql/initdb.d/*.out
+src/postgresql/initdb.d/*.out
 
 
 ## Projects-specific ignores
 CLAUDE.md
-IMPROMENTS.md
+IMPROVENTS.md

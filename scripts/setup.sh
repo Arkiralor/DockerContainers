@@ -37,7 +37,7 @@ check_docker_compose() {
 setup_env_files() {
     echo "📄 Setting up environment files..."
 
-    services=("opensearch" "postgresql" "redis")
+    services=("src/opensearch" "src/postgresql" "src/redis")
 
     for service in "${services[@]}"; do
         if [ -f "${service}/.env.example" ] && [ ! -f "${service}/.env" ]; then
@@ -54,7 +54,7 @@ setup_env_files() {
 create_data_dirs() {
     echo "📁 Creating data directories..."
 
-    services=("opensearch" "postgresql" "redis")
+    services=("src/opensearch" "src/postgresql" "src/redis")
 
     for service in "${services[@]}"; do
         data_dir="${service}/data"

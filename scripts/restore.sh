@@ -111,7 +111,7 @@ restore_postgresql() {
     echo ""
     echo "📦 Restoring PostgreSQL from: $(basename $backup_file)"
 
-    local service_dir="postgresql"
+    local service_dir="src/postgresql"
 
     if [ ! -d "$service_dir" ]; then
         echo "❌ PostgreSQL service directory not found"
@@ -146,7 +146,7 @@ restore_postgresql() {
 
     if [ -z "$container_id" ]; then
         echo "❌ Failed to start PostgreSQL container"
-        cd ..
+        cd ../..
         return 1
     fi
 
@@ -165,11 +165,11 @@ restore_postgresql() {
         echo "✅ PostgreSQL restore completed successfully"
     else
         echo "❌ Failed to restore PostgreSQL"
-        cd ..
+        cd ../..
         return 1
     fi
 
-    cd ..
+    cd ../..
     return 0
 }
 
@@ -192,7 +192,7 @@ restore_redis() {
     echo ""
     echo "📦 Restoring Redis from: $(basename $backup_file)"
 
-    local service_dir="redis"
+    local service_dir="src/redis"
 
     if [ ! -d "$service_dir" ]; then
         echo "❌ Redis service directory not found"
@@ -210,7 +210,7 @@ restore_redis() {
 
     if [ -z "$container_id" ]; then
         echo "⚠️  Redis container not running. Please start it first."
-        cd ..
+        cd ../..
         return 1
     fi
 
@@ -249,11 +249,11 @@ restore_redis() {
         echo "✅ Redis restore completed successfully"
     else
         echo "❌ Failed to restore Redis"
-        cd ..
+        cd ../..
         return 1
     fi
 
-    cd ..
+    cd ../..
     return 0
 }
 
@@ -276,7 +276,7 @@ restore_opensearch() {
     echo ""
     echo "📦 Restoring OpenSearch from: $(basename $backup_dir)"
 
-    local service_dir="opensearch"
+    local service_dir="src/opensearch"
 
     if [ ! -d "$service_dir" ]; then
         echo "❌ OpenSearch service directory not found"
@@ -330,14 +330,14 @@ restore_opensearch() {
     for i in {1..30}; do
         if curl -s http://localhost:9200/_cluster/health > /dev/null 2>&1; then
             echo "✅ OpenSearch restore completed successfully"
-            cd ..
+            cd ../..
             return 0
         fi
         sleep 2
     done
 
-    echo "⚠️  OpenSearch started but health check timed out. Check logs with: cd opensearch && docker-compose logs"
-    cd ..
+    echo "⚠️  OpenSearch started but health check timed out. Check logs with: cd src/opensearch && docker-compose logs"
+    cd ../..
     return 0
 }
 

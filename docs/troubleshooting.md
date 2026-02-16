@@ -68,7 +68,7 @@ docker system df
 
 ```bash
 # Check container status
-cd postgresql
+cd src/postgresql
 docker-compose ps
 
 # Check logs
@@ -93,7 +93,7 @@ docker-compose exec postgres psql -U postgres -d postgres
 
 ```bash
 # Remove data directory and restart (WARNING: DATA LOSS)
-rm -rf postgresql/data
+rm -rf src/postgresql/data
 docker-compose up -d
 
 # Check initialization logs
@@ -118,7 +118,7 @@ docker-compose logs postgres
 
 ```bash
 # Check container status
-cd redis  
+cd src/redis  
 docker-compose ps
 
 # Test Redis connectivity

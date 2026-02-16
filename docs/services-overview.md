@@ -91,52 +91,67 @@ This document provides a detailed overview of all services included in this Dock
 - **Storage**: Minimal (for persistence files)
 - **CPU**: 1+ cores recommended
 
-## Service Dependencies
+## Service Access
 
-### Typical Architecture Patterns
+All services are standalone and accessed via exposed ports on localhost. External applications connect directly to each service independently.
+
+### Connection Points
+
+- **Redis**: `localhost:6379`
+- **PostgreSQL**: `localhost:5432`
+- **OpenSearch**: `localhost:9200`
+- **OpenSearch Dashboards**: `localhost:5601`
+
+### Typical Usage Patterns
 
 1. **Web Application Stack**:
-
-   ```
-   Web App → Redis (cache/sessions) → PostgreSQL (primary data)
-   ```
+   - Application connects to Redis at `localhost:6379` for caching and sessions
+   - Application connects to PostgreSQL at `localhost:5432` for primary data storage
 
 2. **Search-Enabled Application**:
-
-   ```
-   Web App → PostgreSQL (structured data) → OpenSearch (search/analytics)
-   ```
+   - Application connects to PostgreSQL at `localhost:5432` for structured data
+   - Application connects to OpenSearch at `localhost:9200` for search and analytics
 
 3. **Full Stack**:
+   - Application connects to Redis at `localhost:6379` for caching
+   - Application connects to PostgreSQL at `localhost:5432` for data storage
+   - Application connects to OpenSearch at `localhost:9200` for search and log analysis
 
-   ```
-   Web App → Redis (cache) → PostgreSQL (data) → OpenSearch (search/logs)
-   ```
+### Multi-Redis Setup
 
-## Network Configuration
+When using `docker-compose.multi-redis.yml`, five independent Redis instances are available:
 
-All services are configured to run on the default Docker network. They can communicate with each other using service names as hostnames:
+- **redis-1**: `localhost:6379`
+- **redis-2**: `localhost:6380`
+- **redis-3**: `localhost:6381`
+- **redis-4**: `localhost:6382`
+- **redis-5**: `localhost:6383`
 
-- `redis:6379`
-- `postgresql:5432`
-- `opensearch:9200`
+## Network Architecture
+
+Services do not communicate with each other. Each service runs independently and is accessed by external applications via exposed ports. This design provides:
+
+- Simple, predictable connectivity
+- Service isolation
+- Easy debugging and troubleshooting
+- Flexibility to start only needed services
 
 ## Data Persistence Strategy
 
 ### PostgreSQL
 
-- Database files: `postgresql/data/`
+- Database files: `src/postgresql/data/`
 - Backups: Use `pg_dump` (see backup script)
 
 ### OpenSearch  
 
-- Index data: `opensearch/data/`
+- Index data: `src/opensearch/data/`
 - Snapshots: Configure repository for backups
 
 ### Redis
 
-- RDB snapshots: `redis/data/dump.rdb`
-- AOF log: `redis/data/appendonly.aof`
+- RDB snapshots: `src/redis/data/dump.rdb`
+- AOF log: `src/redis/data/appendonly.aof`
 
 ## Monitoring and Health Checks
 

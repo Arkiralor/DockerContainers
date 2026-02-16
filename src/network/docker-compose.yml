@@ -1,0 +1,21 @@
+networks:
+  container-net:
+    driver: bridge
+    # Allow standalone containers to attach to this network
+    attachable: true
+    # Custom subnet for predictable IP addressing
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+          gateway: 172.28.0.1
+    # Driver options for performance and DNS
+    driver_opts:
+      com.docker.network.bridge.name: br-container-net
+      com.docker.network.bridge.enable_icc: "true"  # Inter-container communication
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.driver.mtu: "1500"
+    # Labels for documentation
+    labels:
+      com.dockercontainers.description: "Optional shared network for inter-service communication"
+      com.dockercontainers.usage: "docker network connect container-net <container_name>"

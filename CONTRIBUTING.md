@@ -1,6 +1,6 @@
 # Contributing to Docker Containers
 
-Thank you for your interest in contributing to this Docker containers repository!
+Thank you for your interest in contributing to this Docker containers repository.
 
 ## How to Contribute
 

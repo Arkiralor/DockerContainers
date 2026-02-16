@@ -76,25 +76,28 @@ That's it! Your services are now running:
 
 ```
 DockerContainers/
-├── postgresql/              # PostgreSQL setup
-│   ├── docker-compose.yml   # Main compose file
-│   ├── .env.example         # Environment template
-│   ├── config/              # PostgreSQL configuration
-│   ├── initdb.d/            # Initialization scripts
-│   └── README.md            # PostgreSQL documentation
-│
-├── redis/                   # Redis setup
-│   ├── docker-compose.yml   # Single instance
-│   ├── docker-compose.multi-redis.yml  # 5 instances
-│   ├── .env.example         # Environment template
-│   ├── config/              # Redis configuration
-│   └── README.md            # Redis documentation
-│
-├── opensearch/              # OpenSearch setup
-│   ├── docker-compose.yml   # OpenSearch + Dashboards
-│   ├── .env.example         # Environment template
-│   ├── config/              # OpenSearch configuration
-│   └── README.md            # OpenSearch documentation
+├── src/                     # Source directory for all services
+│   ├── postgresql/          # PostgreSQL setup
+│   │   ├── docker-compose.yml   # Main compose file
+│   │   ├── .env.example         # Environment template
+│   │   ├── config/              # PostgreSQL configuration
+│   │   ├── initdb.d/            # Initialization scripts
+│   │   └── README.md            # PostgreSQL documentation
+│   │
+│   ├── redis/               # Redis setup
+│   │   ├── docker-compose.yml   # Single instance
+│   │   ├── docker-compose.multi-redis.yml  # 5 instances
+│   │   ├── .env.example         # Environment template
+│   │   ├── config/              # Redis configuration
+│   │   └── README.md            # Redis documentation
+│   │
+│   ├── opensearch/          # OpenSearch setup
+│   │   ├── docker-compose.yml   # OpenSearch + Dashboards
+│   │   ├── .env.example         # Environment template
+│   │   ├── config/              # OpenSearch configuration
+│   │   └── README.md            # OpenSearch documentation
+│   │
+│   └── network/             # Optional shared network
 │
 ├── scripts/                 # Management scripts
 │   ├── setup.sh             # Initial setup
@@ -146,7 +149,7 @@ make shell-postgres          # Open psql shell
 make logs-postgres           # View logs
 ```
 
-[Full PostgreSQL Documentation](postgresql/README.md)
+[Full PostgreSQL Documentation](src/postgresql/README.md)
 
 ---
 
@@ -191,7 +194,7 @@ make shell-redis             # Open Redis CLI
 make logs-redis              # View logs
 ```
 
-[Full Redis Documentation](redis/README.md)
+[Full Redis Documentation](src/redis/README.md)
 
 ---
 
@@ -231,7 +234,7 @@ make logs-dashboards         # View Dashboards logs
 curl http://localhost:9200/_cluster/health?pretty
 ```
 
-[Full OpenSearch Documentation](opensearch/README.md)
+[Full OpenSearch Documentation](src/opensearch/README.md)
 
 ---
 
@@ -306,7 +309,7 @@ make stats                   # Show resource usage (CPU, memory)
 
 ```bash
 make clean                   # Remove all containers, volumes, and data
-                            # ⚠️ WARNING: This deletes all data!
+                            # WARNING: This deletes all data!
 ```
 
 ---
@@ -437,15 +440,15 @@ Docker Containers Test Suite
 
 Docker Tests
 ---------------
-✓ Docker daemon is running
+PASS: Docker daemon is running
 
 PostgreSQL Tests
 -------------------
-✓ PostgreSQL container is running
-✓ PostgreSQL health check passes
-✓ PostgreSQL accepts connections
-✓ PostgreSQL port 5432 is accessible
-✓ PostgreSQL volume exists
+PASS: PostgreSQL container is running
+PASS: PostgreSQL health check passes
+PASS: PostgreSQL accepts connections
+PASS: PostgreSQL port 5432 is accessible
+PASS: PostgreSQL volume exists
 
 ... (30+ total tests)
 
@@ -487,7 +490,7 @@ docker stats                 # Continuous monitoring
 
 ---
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Quick Diagnostics
 
@@ -551,7 +554,7 @@ sysctl vm.max_map_count
 sudo sysctl -w vm.max_map_count=262144
 ```
 
-[📖 Full Troubleshooting Guide](docs/troubleshooting.md)
+[Full Troubleshooting Guide](docs/troubleshooting.md)
 
 ---
 
@@ -646,7 +649,7 @@ This project uses a copyleft license. See [LICENSE](LICENSE.md) for details.
 
 ---
 
-## After setup, you can:
+## After setup, you can
 
 1. **Connect Your Application**: Use the connection strings above
 2. **Customize Configuration**: Edit files in `config/` directories

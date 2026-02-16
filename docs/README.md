@@ -6,7 +6,7 @@
 
 This directory contains additional documentation, guides, and resources for the Docker Containers repository. All documentation is designed for local development use.
 
-## 📚 Documentation Index
+## Documentation Index
 
 ### Quick Links
 
@@ -26,7 +26,7 @@ This directory contains additional documentation, guides, and resources for the 
 - **[Troubleshooting](troubleshooting.md)** - Common issues and solutions
 - **[Services Overview](services-overview.md)** - Detailed service information
 
-## 🚀 Quick Start
+## Quick Start
 
 New to this repository? Start with these steps:
 
@@ -36,7 +36,7 @@ New to this repository? Start with these steps:
 4. **Run Tests** - `make test` to verify everything works
 5. **Explore Services** - Check individual service READMEs for details
 
-## 📖 Documentation by Topic
+## Documentation by Topic
 
 ### Getting Started
 
@@ -153,14 +153,14 @@ make backup
 
 **Update services:**
 ```bash
-cd postgresql && docker compose pull
-cd redis && docker compose pull
-cd opensearch && docker compose pull
+cd src/postgresql && docker compose pull
+cd src/redis && docker compose pull
+cd src/opensearch && docker compose pull
 ```
 
 **Clean up:**
 ```bash
-make clean  # ⚠️ Warning: Deletes all data!
+make clean  # Warning: Deletes all data!
 ```
 
 **Restart everything:**
@@ -211,24 +211,24 @@ DockerContainers/
 └── CONTRIBUTING.md            # Contribution guide
 ```
 
-## 🎯 Feature Highlights
+## Feature Highlights
 
-### ✅ Easy to Use
+### Easy to Use
 - One-command setup and start
 - Makefile with 25+ convenient commands
 - Clear documentation for everything
 
-### ✅ Reliable
+### Reliable
 - 30+ automated tests
 - Health checks on all services
 - Resource limits prevent issues
 
-### ✅ Complete
+### Complete
 - Backup and restore capabilities
 - Comprehensive troubleshooting guides
 - Code examples in multiple languages
 
-### ✅ Well-Documented
+### Well-Documented
 - Service-specific READMEs
 - API usage examples
 - Common operations guides
@@ -293,7 +293,7 @@ All documentation in this repository follows these standards:
 - **Docker Forums**: [Docker Community](https://forums.docker.com/)
 - **Stack Overflow**: Search for specific error messages
 
-## 🔄 Keeping Documentation Updated
+## Keeping Documentation Updated
 
 This documentation is actively maintained. Last major update: **February 2026**
 
