@@ -20,6 +20,8 @@ and offers a quick way to spin up these services without complex setup.
 - **OpenSearch**: Search and analytics engine on port 9200
 - **OpenSearch Dashboards**: Web interface for OpenSearch on port 5601
 - **Management Scripts**: Automated setup, backup, and maintenance tools
+- **Terminal UI**: Keyboard-driven interface for container management
+- **Web UI**: Browser-based interface for service monitoring
 - **Health Monitoring**: Built-in health checks and status reporting
 
 ## Prerequisites
@@ -209,6 +211,94 @@ make shell-redis
 make shell-opensearch
 ```
 
+## Management Interfaces
+
+In addition to command-line tools, this repository provides graphical user interfaces for managing services.
+
+### Terminal UI (TUI)
+
+A keyboard-driven terminal interface for managing Docker containers with real-time monitoring and log viewing capabilities.
+
+**Location**: `src/gui/tui/`
+
+**Features**:
+- Interactive service list with live status updates
+- Real-time log viewer with search and follow capabilities
+- System operations execution (backup, restore, setup, test)
+- Keyboard-driven navigation for efficiency
+- Comprehensive error handling and stability
+- Memory-safe operation with strict resource bounds
+
+**Installation**:
+
+```bash
+cd src/gui/tui
+source env/bin/activate
+./.scripts/install.sh
+```
+
+**Starting the TUI**:
+
+```bash
+cd src/gui/tui
+source env/bin/activate
+python -m src.main
+```
+
+**Command Line Options**:
+
+```bash
+# Show help
+python -m src.main --help
+
+# Start with custom refresh interval
+python -m src.main --refresh-interval 10
+
+# Check system prerequisites
+python -m src.main check
+```
+
+**Navigation**:
+
+Main Screen:
+- `s` - Services screen
+- `o` - Operations screen
+- `?` - Help screen
+- `r` - Refresh status
+- `q` or `Ctrl+C` - Quit
+
+Services Screen:
+- `↑/↓` - Navigate service list
+- `Enter` or `Space` - Start/Stop selected service
+- `l` - View logs for selected service
+- `d` - Show service details
+- `r` - Refresh status
+- `Escape` or `q` - Back to main screen
+
+Log Viewer:
+- `f` - Toggle real-time log following
+- `r` - Refresh logs
+- `c` - Clear displayed logs
+- `s` - Save logs to file
+- `+/-` - Increase/decrease number of log lines
+- `Escape` or `q` - Back to services
+
+**Documentation**: See [TUI README](src/gui/tui/README.md) for complete documentation.
+
+### Web UI
+
+A web-based interface for container management that runs on bare metal.
+
+**Location**: `src/gui/web/`
+
+**Features**:
+- Service monitoring dashboard
+- Container lifecycle management
+- Log viewing and analysis
+- Configuration management
+
+**Documentation**: See [Web UI README](src/gui/web/README.md) for setup and usage instructions.
+
 ## Using Individual Services
 
 ### PostgreSQL Only
@@ -288,8 +378,8 @@ Interactive menu lets you:
 Each service has an `.env.example` file with configuration options. Copy to `.env` to customize:
 
 ```bash
-cp postgresql/.env.example postgresql/.env
-# Edit postgresql/.env as needed
+cp src/postgresql/.env.example src/postgresql/.env
+# Edit src/postgresql/.env as needed
 ```
 
 ### Service Configuration

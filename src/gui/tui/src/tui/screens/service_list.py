@@ -88,7 +88,10 @@ class ServiceListScreen(Screen):
 
     def _setup_table(self) -> None:
         """Set up the services data table."""
-        table = self.query_one("#services-table", DataTable)
+        try:
+            table = self.query_one("#services-table", DataTable)
+        except Exception:
+            return
 
         # Add columns
         table.add_columns(
@@ -104,23 +107,23 @@ class ServiceListScreen(Screen):
             status_color = "white"
             if status:
                 if status.status == "running":
-                    status_text = "🟢 Running"
+                    status_text = "Running"
                 elif status.status == "exited" or status.status == "stopped":
-                    status_text = "🔴 Stopped"
+                    status_text = "Stopped"
                 elif status.status == "not_found":
-                    status_text = "⚪ Not Created"
+                    status_text = "Not Created"
                 else:
-                    status_text = f"⚠️ {status.status.title()}"
+                    status_text = f"{status.status.title()}"
 
             # Format health
             health_text = "N/A"
             if status and status.health:
                 if status.health == "healthy":
-                    health_text = "✅ Healthy"
+                    health_text = "Healthy"
                 elif status.health == "unhealthy":
-                    health_text = "❌ Unhealthy"
+                    health_text = "Unhealthy"
                 elif status.health == "starting":
-                    health_text = "🔄 Starting"
+                    health_text = "Starting"
 
             # Format ports
             ports_text = ""
@@ -143,7 +146,7 @@ class ServiceListScreen(Screen):
 
         # Select first row if available
         if self.services:
-            table.cursor_row = 0
+            table.move_cursor(row=0)
 
     def _update_status_info(self) -> None:
         """Update status information display."""
@@ -151,7 +154,11 @@ class ServiceListScreen(Screen):
             return
 
         status = self.container_statuses.get(self._selected_service.container_name)
-        info_widget = self.query_one("#status-info", Static)
+
+        try:
+            info_widget = self.query_one("#status-info", Static)
+        except Exception:
+            return
 
         info_lines = [
             f"Selected: {self._selected_service.name}",
@@ -191,9 +198,12 @@ class ServiceListScreen(Screen):
 
         info_widget.update("\n".join(info_lines))
 
-    def _get_selected_service(self) -> ServiceConfig:
+    def _get_selected_service(self) -> ServiceConfig | None:
         """Get currently selected service."""
-        table = self.query_one("#services-table", DataTable)
+        try:
+            table = self.query_one("#services-table", DataTable)
+        except Exception:
+            return self.services[0] if self.services else None
 
         if table.cursor_row is not None and 0 <= table.cursor_row < len(self.services):
             return self.services[table.cursor_row]
@@ -216,10 +226,13 @@ class ServiceListScreen(Screen):
         self.container_statuses = self.app_ref.container_statuses
 
         # Refresh table
-        table = self.query_one("#services-table", DataTable)
-        table.clear()
-        self._setup_table()
-        self._update_status_info()
+        try:
+            table = self.query_one("#services-table", DataTable)
+            table.clear()
+            self._setup_table()
+            self._update_status_info()
+        except Exception:
+            pass
 
         self.notify("Status refreshed")
 
@@ -227,6 +240,7 @@ class ServiceListScreen(Screen):
         """Start or stop the selected service."""
         service = self._get_selected_service()
         if not service:
+            self.notify("No service selected", severity="warning")
             return
 
         status = self.container_statuses.get(service.container_name)
@@ -261,6 +275,7 @@ class ServiceListScreen(Screen):
         """View logs for selected service."""
         service = self._get_selected_service()
         if not service:
+            self.notify("No service selected", severity="warning")
             return
 
         # Import here to avoid circular imports
@@ -272,6 +287,7 @@ class ServiceListScreen(Screen):
         """Show detailed information for selected service."""
         service = self._get_selected_service()
         if not service:
+            self.notify("No service selected", severity="warning")
             return
 
         # Import here to avoid circular imports
@@ -290,7 +306,8 @@ class ServiceListScreen(Screen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button press."""
         if event.button.id == "toggle-button":
-            self.run_worker(self.action_service_action())
+            worker = self.run_worker(self.action_service_action(), exclusive=True)
+            worker.name = "service_action"
         elif event.button.id == "logs-button":
             self.action_view_logs()
         elif event.button.id == "details-button":

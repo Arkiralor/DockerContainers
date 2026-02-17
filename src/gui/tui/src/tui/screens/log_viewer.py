@@ -44,6 +44,7 @@ class LogViewerScreen(Screen):
         self.following = False
         self.logs_content: list[str] = []
         self._follow_task: asyncio.Task | None = None
+        self._last_log_check: datetime | None = None
 
     def compose(self) -> ComposeResult:
         """Create log viewer layout."""
@@ -85,7 +86,7 @@ class LogViewerScreen(Screen):
 
     def on_unmount(self) -> None:
         """Handle screen unmount."""
-        self._stop_following()
+        self._stop_following(update_ui=False)
 
     def _update_status(self) -> None:
         """Update status display."""
@@ -96,8 +97,12 @@ class LogViewerScreen(Screen):
         if self.logs_content:
             status_text += f" | Total: {len(self.logs_content)} lines"
 
-        status_widget = self.query_one("#log-status", Static)
-        status_widget.update(status_text)
+        try:
+            status_widget = self.query_one("#log-status", Static)
+            status_widget.update(status_text)
+        except Exception:
+            # Widget may not exist during screen lifecycle changes
+            pass
 
     def refresh_logs(self) -> None:
         """Refresh logs from container."""
@@ -112,7 +117,7 @@ class LogViewerScreen(Screen):
 
         if not logs:
             logs = ["No logs available"]
-        elif isinstance(logs, list) and logs[0].startswith("ERROR:"):
+        elif len(logs) > 0 and logs[0].startswith("ERROR:"):
             self._display_error(logs[0])
             return
 
@@ -122,7 +127,11 @@ class LogViewerScreen(Screen):
 
     def _display_logs(self) -> None:
         """Display logs in the content area."""
-        log_widget = self.query_one("#log-content", Static)
+        try:
+            log_widget = self.query_one("#log-content", Static)
+        except Exception:
+            # Widget may not exist during screen lifecycle changes
+            return
 
         if not self.logs_content:
             log_widget.update("No logs available")
@@ -144,8 +153,13 @@ class LogViewerScreen(Screen):
 
     def _display_error(self, error_message: str) -> None:
         """Display error message."""
-        log_widget = self.query_one("#log-content", Static)
-        log_widget.update(f"❌ {error_message}")
+        try:
+            log_widget = self.query_one("#log-content", Static)
+            log_widget.update(f"ERROR: {error_message}")
+        except Exception:
+            # Widget may not exist during screen lifecycle changes
+            pass
+
         self.notify(error_message, severity="error")
 
     def action_back(self) -> None:
@@ -167,9 +181,18 @@ class LogViewerScreen(Screen):
 
     def action_clear(self) -> None:
         """Clear displayed logs."""
+        # Stop following if active to prevent race condition
+        if self.following:
+            self._stop_following()
+
         self.logs_content = []
-        log_widget = self.query_one("#log-content", Static)
-        log_widget.update("Logs cleared")
+
+        try:
+            log_widget = self.query_one("#log-content", Static)
+            log_widget.update("Logs cleared")
+        except Exception:
+            pass
+
         self._update_status()
 
     def action_save_logs(self) -> None:
@@ -178,11 +201,13 @@ class LogViewerScreen(Screen):
             self.notify("No logs to save", severity="warning")
             return
 
-        # Generate filename with timestamp
+        # Generate filename with timestamp in current directory
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"{self.service.container_name}_{timestamp}.log"
 
         try:
+            import os
+
             with open(filename, "w") as f:
                 f.write(
                     f"# Logs for {self.service.name} ({self.service.container_name})\n"
@@ -192,24 +217,32 @@ class LogViewerScreen(Screen):
                 )
                 f.write("\n".join(self.logs_content))
 
-            self.notify(f"Logs saved to {filename}")
+            # Show absolute path to user
+            abs_path = os.path.abspath(filename)
+            self.notify(f"Logs saved to {abs_path}")
 
         except Exception as e:
             self.notify(f"Failed to save logs: {e}", severity="error")
 
     def action_increase_tail(self) -> None:
         """Increase number of log lines to display."""
-        if self.tail_lines < 1000:
-            self.tail_lines = min(1000, self.tail_lines + 50)
-            self._update_status()
-            self.refresh_logs()
+        if self.tail_lines >= 1000:
+            self.notify("Already at maximum lines (1000)", severity="warning")
+            return
+
+        self.tail_lines = min(1000, self.tail_lines + 50)
+        self._update_status()
+        self.refresh_logs()
 
     def action_decrease_tail(self) -> None:
         """Decrease number of log lines to display."""
-        if self.tail_lines > 10:
-            self.tail_lines = max(10, self.tail_lines - 50)
-            self._update_status()
-            self.refresh_logs()
+        if self.tail_lines <= 10:
+            self.notify("Already at minimum lines (10)", severity="warning")
+            return
+
+        self.tail_lines = max(10, self.tail_lines - 50)
+        self._update_status()
+        self.refresh_logs()
 
     def _start_following(self) -> None:
         """Start following logs in real-time."""
@@ -221,27 +254,44 @@ class LogViewerScreen(Screen):
         self._update_status()
 
         # Start background task for log following
-        self._follow_task = asyncio.create_task(self._follow_logs())
+        try:
+            self._follow_task = asyncio.create_task(self._follow_logs())
+        except Exception as e:
+            # Task creation failed, reset state
+            self.following = False
+            self._update_follow_button()
+            self._update_status()
+            self.notify(f"Failed to start log following: {e}", severity="error")
 
-    def _stop_following(self) -> None:
-        """Stop following logs."""
+    def _stop_following(self, update_ui: bool = True) -> None:
+        """Stop following logs.
+
+        Args:
+            update_ui: Whether to update UI elements (set to False during unmount)
+        """
         if self._follow_task:
             self._follow_task.cancel()
             self._follow_task = None
 
         self.following = False
-        self._update_follow_button()
-        self._update_status()
+
+        if update_ui:
+            self._update_follow_button()
+            self._update_status()
 
     def _update_follow_button(self) -> None:
         """Update follow button appearance."""
-        follow_button = self.query_one("#follow-button", Button)
-        if self.following:
-            follow_button.label = "Stop Follow"
-            follow_button.variant = "success"
-        else:
-            follow_button.label = "Follow"
-            follow_button.variant = "default"
+        try:
+            follow_button = self.query_one("#follow-button", Button)
+            if self.following:
+                follow_button.label = "Stop Follow"
+                follow_button.variant = "success"
+            else:
+                follow_button.label = "Follow"
+                follow_button.variant = "default"
+        except Exception:
+            # Button may not exist during screen teardown
+            pass
 
     async def _follow_logs(self) -> None:
         """Background task for following logs."""
@@ -249,29 +299,36 @@ class LogViewerScreen(Screen):
             try:
                 await asyncio.sleep(2)  # Update every 2 seconds
 
+                # Check if still following (might have changed during sleep)
+                if not self.following:
+                    break
+
                 if not self.docker_client.is_connected():
                     continue
 
-                # Get recent logs
+                # Get recent logs since last check
                 new_logs = self.docker_client.get_container_logs(
                     self.service.container_name,
                     tail=20,  # Get last 20 lines
-                    since=datetime.now().replace(second=datetime.now().second - 10)
-                    if self.logs_content
-                    else None,
+                    since=self._last_log_check,
                 )
 
-                if new_logs and not new_logs[0].startswith("ERROR:"):
-                    # Append new logs if they're different
-                    if new_logs != self.logs_content[-len(new_logs) :]:
-                        self.logs_content.extend(new_logs)
+                # Only process if we got valid logs (not error messages)
+                if new_logs and len(new_logs) > 0 and not new_logs[0].startswith("ERROR:"):
+                    # Update timestamp only after successful retrieval
+                    self._last_log_check = datetime.now()
 
-                        # Keep only recent lines to avoid memory issues
-                        if len(self.logs_content) > self.tail_lines * 2:
-                            self.logs_content = self.logs_content[-self.tail_lines :]
+                    # Add new logs to our collection
+                    self.logs_content.extend(new_logs)
 
-                        self._display_logs()
-                        self._update_status()
+                    # Keep memory bounded - limit to 2x the tail size
+                    max_lines = self.tail_lines * 2
+                    if len(self.logs_content) > max_lines:
+                        self.logs_content = self.logs_content[-max_lines:]
+
+                    # Update display
+                    self._display_logs()
+                    self._update_status()
 
             except asyncio.CancelledError:
                 break

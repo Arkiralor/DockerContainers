@@ -177,6 +177,34 @@ The TUI automatically finds the repository root by looking for the Makefile. If 
 python -m src.main --repository-root /path/to/DockerContainers
 ```
 
+## Stability & Reliability
+
+The TUI has undergone comprehensive stability improvements to ensure robust operation:
+
+### Recent Improvements
+
+**Crash Prevention** (February 2024)
+- All widget lifecycle operations protected against DOM teardown exceptions
+- Comprehensive exception handling added to prevent crashes during screen transitions
+- Safe cleanup implemented for async operations and background tasks
+
+**Race Condition Fixes**
+- Log following now properly synchronized to prevent concurrent modification
+- State management improved for all async operations
+- Background workers properly tracked with exclusive execution
+
+**Memory Management**
+- Strict bounds enforced on log accumulation (prevents unbounded growth)
+- Efficient cleanup of old logs when limits are reached
+- Memory-safe async task handling
+
+**Error Recovery**
+- Graceful degradation when widgets are unavailable
+- Proper state rollback on task creation failures
+- Clear user notifications for all errors
+
+See [CHANGELOG.md](./CHANGELOG.md) for complete details on all stability improvements.
+
 ## Troubleshooting
 
 ### Common Issues

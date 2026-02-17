@@ -16,7 +16,7 @@ TESTS_PASSED=0
 TESTS_FAILED=0
 TESTS_TOTAL=0
 
-echo "🧪 Docker Containers Test Suite"
+echo "Docker Containers Test Suite"
 echo "================================"
 echo ""
 
@@ -28,10 +28,10 @@ print_result() {
     TESTS_TOTAL=$((TESTS_TOTAL + 1))
 
     if [ "$result" -eq 0 ]; then
-        echo -e "${GREEN}✓${NC} $test_name"
+        echo -e "${GREEN}[PASS]${NC} $test_name"
         TESTS_PASSED=$((TESTS_PASSED + 1))
     else
-        echo -e "${RED}✗${NC} $test_name"
+        echo -e "${RED}[FAIL]${NC} $test_name"
         TESTS_FAILED=$((TESTS_FAILED + 1))
     fi
 }
@@ -214,7 +214,7 @@ test_status_script_exists() {
 main() {
     # Ensure we're in the right directory
     if [ ! -f "../CONTRIBUTING.md" ]; then
-        echo -e "${RED}❌ Please run this script from the test/ directory${NC}"
+        echo -e "${RED}ERROR: Please run this script from the test/ directory${NC}"
         exit 1
     fi
 
@@ -224,13 +224,13 @@ main() {
     echo ""
 
     # Docker Tests
-    echo "🐳 Docker Tests"
+    echo "Docker Tests"
     echo "---------------"
     test_docker_running
     echo ""
 
     # PostgreSQL Tests
-    echo "🐘 PostgreSQL Tests"
+    echo "PostgreSQL Tests"
     echo "-------------------"
     test_postgres_running
     test_postgres_health
@@ -240,7 +240,7 @@ main() {
     echo ""
 
     # Redis Tests
-    echo "🔴 Redis Tests"
+    echo "Redis Tests"
     echo "--------------"
     test_redis_running
     test_redis_health
@@ -250,7 +250,7 @@ main() {
     echo ""
 
     # OpenSearch Tests
-    echo "🔍 OpenSearch Tests"
+    echo "OpenSearch Tests"
     echo "-------------------"
     test_opensearch_running
     test_opensearch_health
@@ -262,7 +262,7 @@ main() {
     echo ""
 
     # Script Tests
-    echo "📜 Script Tests"
+    echo "Script Tests"
     echo "---------------"
     test_backup_script_exists
     test_restore_script_exists
@@ -282,10 +282,10 @@ main() {
     echo ""
 
     if [ $TESTS_FAILED -eq 0 ]; then
-        echo -e "${GREEN}✅ All tests passed!${NC}"
+        echo -e "${GREEN}[OK] All tests passed!${NC}"
         exit 0
     else
-        echo -e "${RED}❌ Some tests failed${NC}"
+        echo -e "${RED}[FAIL] Some tests failed${NC}"
         exit 1
     fi
 }

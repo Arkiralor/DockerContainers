@@ -1,11 +1,10 @@
 """Service details screen for displaying comprehensive service information."""
 
 from textual.app import ComposeResult
+from textual.binding import Binding
 from textual.containers import Container
 from textual.screen import ModalScreen
 from textual.widgets import Button, Static
-from textual.binding import Binding
-from typing import Optional
 
 from ...config.services import ServiceConfig
 from ...services.docker_client import ContainerStatus
@@ -19,7 +18,7 @@ class ServiceDetailsScreen(ModalScreen):
         Binding("q", "back", "Back", priority=True),
     ]
 
-    def __init__(self, service: ServiceConfig, status: Optional[ContainerStatus]):
+    def __init__(self, service: ServiceConfig, status: ContainerStatus | None):
         """Initialize service details screen.
 
         Args:
@@ -111,7 +110,7 @@ class ServiceDetailsScreen(ModalScreen):
                     lines.append(f"    {host_port} → {container_port}")
 
             if self.status.error_message:
-                lines.extend(["", f"❌ Error: {self.status.error_message}"])
+                lines.extend(["", f"ERROR: {self.status.error_message}"])
 
         return "\n".join(lines)
 

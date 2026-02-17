@@ -5,7 +5,7 @@
 
 set -e
 
-echo "🛑 Stopping all Docker services..."
+echo "Stopping all Docker services..."
 
 # Array of service directories
 services=("src/opensearch" "src/postgresql" "src/redis")
@@ -13,40 +13,42 @@ services=("src/opensearch" "src/postgresql" "src/redis")
 # Function to stop a service
 stop_service() {
     local service=$1
-    echo "📦 Stopping ${service}..."
+    echo "Stopping ${service}..."
 
     if [ -d "$service" ] && [ -f "${service}/docker-compose.yml" ]; then
-        cd "$service"
+        # Use subshell to avoid directory navigation issues
+        (
+            cd "$service" || exit 1
 
-        # Stop the service
-        if command -v docker-compose &> /dev/null; then
-            docker-compose down
-        else
-            docker compose down
-        fi
+            # Stop the service
+            if command -v docker-compose &> /dev/null; then
+                docker-compose down
+            else
+                docker compose down
+            fi
 
-        if [ $? -eq 0 ]; then
-            echo "✅ ${service} stopped successfully"
-        else
-            echo "❌ Failed to stop ${service}"
-        fi
-
-        cd ..
+            if [ $? -eq 0 ]; then
+                echo "SUCCESS: ${service} stopped successfully"
+            else
+                echo "ERROR: Failed to stop ${service}"
+                exit 1
+            fi
+        )
     else
-        echo "⚠️  Service directory ${service} not found or missing docker-compose.yml"
+        echo "WARNING: Service directory ${service} not found or missing docker-compose.yml"
     fi
 }
 
 # Function to clean up networks and volumes (optional)
 cleanup() {
     echo ""
-    read -p "🗑️  Do you want to remove unused networks and volumes? [y/N]: " -n 1 -r
+    read -p "Do you want to remove unused networks and volumes? [y/N]: " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo "🧹 Cleaning up unused Docker resources..."
+        echo "Cleaning up unused Docker resources..."
         docker network prune -f
         docker volume prune -f
-        echo "✅ Cleanup completed"
+        echo "Cleanup completed"
     fi
 }
 
@@ -54,7 +56,7 @@ cleanup() {
 main() {
     # Ensure we're in the right directory
     if [ ! -f "CONTRIBUTING.md" ]; then
-        echo "❌ Please run this script from the repository root directory"
+        echo "ERROR: Please run this script from the repository root directory"
         exit 1
     fi
 
@@ -67,7 +69,7 @@ main() {
     cleanup
 
     echo ""
-    echo "🎉 All services stopped!"
+    echo "All services stopped"
     echo "Use './scripts/start-all.sh' to start services again"
 }
 

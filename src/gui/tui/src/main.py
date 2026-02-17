@@ -60,21 +60,23 @@ def main(
 
     # Set up basic error handling
     if debug:
-        click.echo("🔧 Debug mode enabled")
+        click.echo("DEBUG: Debug mode enabled")
 
     # Validate refresh interval
     if refresh_interval < 1 or refresh_interval > 300:
-        click.echo("❌ Refresh interval must be between 1 and 300 seconds", err=True)
+        click.echo(
+            "ERROR: Refresh interval must be between 1 and 300 seconds", err=True
+        )
         sys.exit(1)
 
     # Check prerequisites
-    click.echo("🔍 Checking prerequisites...")
+    click.echo("Checking prerequisites...")
     prereqs_ok, errors = check_prerequisites()
 
     if not prereqs_ok:
-        click.echo("❌ Prerequisites check failed:", err=True)
+        click.echo("ERROR: Prerequisites check failed:", err=True)
         for error in errors:
-            click.echo(f"   • {error}", err=True)
+            click.echo(f"   - {error}", err=True)
         sys.exit(1)
 
     # Find repository root
@@ -84,17 +86,17 @@ def main(
         repo_path = find_repository_root()
         if not repo_path:
             click.echo(
-                "❌ Could not find DockerContainers repository root.\n"
+                "ERROR: Could not find DockerContainers repository root.\n"
                 "   Please run from within the repository or use --repository-root option.",
                 err=True,
             )
             sys.exit(1)
 
-    click.echo(f"📁 Repository root: {repo_path}")
+    click.echo(f"Repository root: {repo_path}")
 
     # Check Docker availability (unless skipped)
     if not no_docker_check:
-        click.echo("🐳 Checking Docker availability...")
+        click.echo("Checking Docker availability...")
 
         try:
             from .services.command_executor import CommandExecutor
@@ -103,7 +105,7 @@ def main(
 
             if not executor.check_docker_available():
                 click.echo(
-                    "⚠️  Docker not available or not running.\n"
+                    "WARNING: Docker not available or not running.\n"
                     "   Some features may not work. Start Docker Desktop or daemon.\n"
                     "   Use --no-docker-check to skip this check.",
                     err=True,
@@ -112,21 +114,21 @@ def main(
                 if not click.confirm("Continue anyway?"):
                     sys.exit(1)
             else:
-                click.echo("✅ Docker is available")
+                click.echo("Docker is available")
 
                 if not executor.check_docker_compose_available():
-                    click.echo("⚠️  Docker Compose not available", err=True)
+                    click.echo("WARNING: Docker Compose not available", err=True)
                 else:
-                    click.echo("✅ Docker Compose is available")
+                    click.echo("Docker Compose is available")
 
         except Exception as e:
             if debug:
-                click.echo(f"🔧 Docker check error: {e}")
-            click.echo("⚠️  Could not check Docker status", err=True)
+                click.echo(f"DEBUG: Docker check error: {e}")
+            click.echo("WARNING: Could not check Docker status", err=True)
 
     # Start the TUI application
     try:
-        click.echo(f"🚀 Starting Docker TUI (refresh interval: {refresh_interval}s)")
+        click.echo(f"Starting Docker TUI (refresh interval: {refresh_interval}s)")
         click.echo("   Press Ctrl+C or 'q' to quit")
 
         app = DockerTUIApp()
@@ -143,16 +145,16 @@ def main(
         app.run()
 
     except KeyboardInterrupt:
-        click.echo("\n👋 Goodbye!")
+        click.echo("\nGoodbye!")
         sys.exit(0)
 
     except Exception as e:
         if debug:
             import traceback
 
-            click.echo(f"🔧 Full traceback:\n{traceback.format_exc()}", err=True)
+            click.echo(f"DEBUG: Full traceback:\n{traceback.format_exc()}", err=True)
 
-        click.echo(f"❌ Application error: {e}", err=True)
+        click.echo(f"ERROR: Application error: {e}", err=True)
         sys.exit(1)
 
 
@@ -179,19 +181,19 @@ def version() -> None:
 def check(repository_root: Path | None) -> None:
     """Check system prerequisites and Docker availability."""
 
-    click.echo("🔍 Checking Docker Container TUI prerequisites...\n")
+    click.echo("Checking Docker Container TUI prerequisites...\n")
 
     # Check basic prerequisites
     prereqs_ok, errors = check_prerequisites()
 
-    click.echo("📋 Basic Prerequisites:")
+    click.echo("Basic Prerequisites:")
     if prereqs_ok:
-        click.echo("   ✅ Python version")
-        click.echo("   ✅ Repository structure")
+        click.echo("   [OK] Python version")
+        click.echo("   [OK] Repository structure")
     else:
-        click.echo("   ❌ Some prerequisites failed:")
+        click.echo("   [FAIL] Some prerequisites failed:")
         for error in errors:
-            click.echo(f"      • {error}")
+            click.echo(f"      - {error}")
 
     # Find repository root
     if repository_root:
@@ -199,49 +201,49 @@ def check(repository_root: Path | None) -> None:
     else:
         repo_path = find_repository_root()
 
-    click.echo("\n📁 Repository Root:")
+    click.echo("\nRepository Root:")
     if repo_path:
-        click.echo(f"   ✅ Found: {repo_path}")
+        click.echo(f"   [OK] Found: {repo_path}")
     else:
-        click.echo("   ❌ Not found")
+        click.echo("   [FAIL] Not found")
         return
 
     # Check Docker
-    click.echo("\n🐳 Docker Availability:")
+    click.echo("\nDocker Availability:")
     try:
         from .services.command_executor import CommandExecutor
 
         executor = CommandExecutor(str(repo_path))
 
         if executor.check_docker_available():
-            click.echo("   ✅ Docker daemon running")
+            click.echo("   [OK] Docker daemon running")
         else:
-            click.echo("   ❌ Docker daemon not available")
+            click.echo("   [FAIL] Docker daemon not available")
 
         if executor.check_docker_compose_available():
-            click.echo("   ✅ Docker Compose available")
+            click.echo("   [OK] Docker Compose available")
         else:
-            click.echo("   ❌ Docker Compose not available")
+            click.echo("   [FAIL] Docker Compose not available")
 
     except Exception as e:
-        click.echo(f"   ❌ Error checking Docker: {e}")
+        click.echo(f"   [ERROR] Error checking Docker: {e}")
 
     # Check services
-    click.echo("\n🔧 Service Configurations:")
+    click.echo("\nService Configurations:")
     try:
         from .config.services import get_all_services
 
         services = get_all_services()
 
-        click.echo(f"   ✅ Found {len(services)} configured services:")
+        click.echo(f"   [OK] Found {len(services)} configured services:")
         for service in services:
-            click.echo(f"      • {service.name} ({service.container_name})")
+            click.echo(f"      - {service.name} ({service.container_name})")
 
     except Exception as e:
-        click.echo(f"   ❌ Error loading services: {e}")
+        click.echo(f"   [ERROR] Error loading services: {e}")
 
     click.echo(
-        f"\n🎯 Status: {'✅ Ready to run!' if prereqs_ok and repo_path else '❌ Not ready'}"
+        f"\nStatus: {'Ready to run' if prereqs_ok and repo_path else 'Not ready'}"
     )
 
 

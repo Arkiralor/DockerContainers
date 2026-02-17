@@ -9,7 +9,6 @@ import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional
 
 
 @dataclass
@@ -26,7 +25,7 @@ class CommandResult:
 class CommandExecutor:
     """Executes Make commands and scripts in the repository root directory."""
 
-    def __init__(self, repository_root: Optional[str] = None):
+    def __init__(self, repository_root: str | None = None):
         """Initialize command executor.
 
         Args:
@@ -40,45 +39,55 @@ class CommandExecutor:
         if not self._check_make_available():
             raise RuntimeError("Make command not available")
 
-    def _find_repository_root(
-        self, provided_path: Optional[str] = None
-    ) -> Optional[str]:
+    def _find_repository_root(self, provided_path: str | None = None) -> str | None:
         """Find the repository root directory.
 
         Args:
-            provided_path: Explicitly provided path to use as root
+            provided_path: Explicitly provided path to use as starting point
 
         Returns:
             Path to repository root directory or None if not found
         """
         if provided_path:
-            if os.path.exists(os.path.join(provided_path, "Makefile")):
-                return os.path.abspath(provided_path)
-            return None
+            current_dir = Path(provided_path).resolve()
+        else:
+            # Start from current file location
+            current_dir = Path(__file__).resolve()
 
-        # Start from current file location and walk up
-        current_dir = Path(__file__).resolve()
-
-        # Walk up from src/gui/tui/src/services/ to find repository root
+        # Walk up from the starting point to find repository root
         max_levels = 10  # Safety limit
         for _ in range(max_levels):
-            current_dir = current_dir.parent
             makefile_path = current_dir / "Makefile"
 
             if makefile_path.exists():
-                return str(current_dir)
+                # Validate this is the repository root by checking for expected directories
+                # Repository root should have both src/ and scripts/ directories
+                if (current_dir / "src").exists() and (current_dir / "scripts").exists():
+                    return str(current_dir)
 
-        # Fallback: check common relative paths
-        possible_roots = [
-            "../../../..",  # From src/gui/tui/src/services/
-            "../../../../..",  # One more level up
-        ]
+            # Move to parent directory
+            parent = current_dir.parent
+            if parent == current_dir:  # Reached filesystem root
+                break
+            current_dir = parent
 
-        script_dir = Path(__file__).parent
-        for rel_path in possible_roots:
-            potential_root = (script_dir / rel_path).resolve()
-            if (potential_root / "Makefile").exists():
-                return str(potential_root)
+        # Fallback: check common relative paths (only if no provided_path)
+        if not provided_path:
+            possible_roots = [
+                "../../../..",  # From src/gui/tui/src/services/
+                "../../../../..",  # One more level up
+            ]
+
+            script_dir = Path(__file__).parent
+            for rel_path in possible_roots:
+                potential_root = (script_dir / rel_path).resolve()
+                if (potential_root / "Makefile").exists():
+                    # Validate this is the repository root
+                    if (
+                        (potential_root / "src").exists()
+                        and (potential_root / "scripts").exists()
+                    ):
+                        return str(potential_root)
 
         return None
 
@@ -111,7 +120,7 @@ class CommandExecutor:
     def execute_script(
         self,
         script_path: str,
-        args: Optional[List[str]] = None,
+        args: list[str] | None = None,
         timeout: int = 60,
         capture_output: bool = True,
     ) -> CommandResult:
@@ -143,7 +152,7 @@ class CommandExecutor:
         return self._execute_command(command, timeout, capture_output)
 
     def _execute_command(
-        self, command: List[str], timeout: int, capture_output: bool
+        self, command: list[str], timeout: int, capture_output: bool
     ) -> CommandResult:
         """Execute a command with error handling.
 

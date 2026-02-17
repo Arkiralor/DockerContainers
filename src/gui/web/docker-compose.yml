@@ -1,3 +1,5 @@
+## DEPRECATED: This file is no longer used. The project has been restructured to use separate Dockerfiles for the server and client, and the application is now run on bare metal instead of using Docker Compose. Please refer to the README.md for updated instructions on how to run the application.
+
 services:
   docker-gui-server:
     build:

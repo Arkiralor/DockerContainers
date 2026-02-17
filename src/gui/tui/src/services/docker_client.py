@@ -5,11 +5,11 @@ health checks, and log viewing. It does NOT perform container operations -
 those are handled through Makefile commands via CommandExecutor.
 """
 
-import docker
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, List, Optional, Union
-from docker.errors import DockerException, NotFound, APIError
+
+import docker
+from docker.errors import APIError, DockerException, NotFound
 
 
 @dataclass
@@ -18,12 +18,12 @@ class ContainerStatus:
 
     name: str
     status: str  # "running", "stopped", "not_found", "error"
-    health: Optional[str] = None  # "healthy", "unhealthy", "starting", None
-    created_at: Optional[datetime] = None
-    started_at: Optional[datetime] = None
-    ports: Optional[Dict[str, str]] = None
-    image: Optional[str] = None
-    error_message: Optional[str] = None
+    health: str | None = None  # "healthy", "unhealthy", "starting", None
+    created_at: datetime | None = None
+    started_at: datetime | None = None
+    ports: dict[str, str] | None = None
+    image: str | None = None
+    error_message: str | None = None
 
 
 @dataclass
@@ -35,7 +35,7 @@ class SystemInfo:
     containers_total: int
     images_total: int
     volumes_total: int
-    disk_usage: Optional[Dict[str, Union[int, str]]] = None
+    disk_usage: dict[str, int | str] | None = None
 
 
 class DockerClient:
@@ -43,7 +43,7 @@ class DockerClient:
 
     def __init__(self):
         """Initialize Docker client."""
-        self._client: Optional[docker.DockerClient] = None
+        self._client: docker.DockerClient | None = None
         self._connect()
 
     def _connect(self) -> bool:
@@ -53,11 +53,12 @@ class DockerClient:
             True if connection successful, False otherwise
         """
         try:
-            self._client = docker.from_env()
-            # Test connection
+            # Set timeout to prevent indefinite blocking
+            self._client = docker.from_env(timeout=5)
+            # Test connection with timeout
             self._client.ping()
             return True
-        except DockerException:
+        except DockerException, Exception:
             self._client = None
             return False
 
@@ -117,7 +118,7 @@ class DockerClient:
                     started_at = datetime.fromisoformat(
                         container.attrs["State"]["StartedAt"].replace("Z", "+00:00")
                     )
-            except (ValueError, KeyError):
+            except ValueError, KeyError:
                 pass  # Handle invalid timestamp formats gracefully
 
             # Get health status if available
@@ -158,8 +159,8 @@ class DockerClient:
             )
 
     def get_multiple_container_status(
-        self, container_names: List[str]
-    ) -> Dict[str, ContainerStatus]:
+        self, container_names: list[str]
+    ) -> dict[str, ContainerStatus]:
         """Get status of multiple containers.
 
         Args:
@@ -177,16 +178,14 @@ class DockerClient:
         self,
         container_name: str,
         tail: int = 100,
-        since: Optional[datetime] = None,
-        follow: bool = False,
-    ) -> List[str]:
+        since: datetime | None = None,
+    ) -> list[str]:
         """Get logs from a container.
 
         Args:
             container_name: Name of the container
             tail: Number of lines to retrieve from end of logs
             since: Only return logs since this timestamp
-            follow: Stream logs (for real-time viewing)
 
         Returns:
             List of log lines
@@ -202,7 +201,7 @@ class DockerClient:
                 "stdout": True,
                 "stderr": True,
                 "timestamps": True,
-                "follow": follow,
+                "follow": False,
             }
 
             if since:
@@ -213,8 +212,8 @@ class DockerClient:
             if isinstance(logs, bytes):
                 logs_text = logs.decode("utf-8", errors="replace")
             else:
-                # Generator for streaming logs
-                return logs
+                # Unexpected type, convert to string
+                logs_text = str(logs)
 
             return [line.strip() for line in logs_text.split("\n") if line.strip()]
 
@@ -227,7 +226,7 @@ class DockerClient:
         except Exception as e:
             return [f"ERROR: Unexpected error: {e}"]
 
-    def get_system_info(self) -> Optional[SystemInfo]:
+    def get_system_info(self) -> SystemInfo | None:
         """Get Docker system information.
 
         Returns:
@@ -259,7 +258,7 @@ class DockerClient:
         except Exception:
             return None
 
-    def list_all_containers(self) -> List[Dict[str, str]]:
+    def list_all_containers(self) -> list[dict[str, str]]:
         """List all containers (running and stopped).
 
         Returns:

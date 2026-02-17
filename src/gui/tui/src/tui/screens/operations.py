@@ -1,6 +1,7 @@
 """Operations screen for executing system-wide operations and scripts."""
 
 import asyncio
+from typing import TYPE_CHECKING
 
 from textual.app import ComposeResult
 from textual.binding import Binding
@@ -28,7 +29,7 @@ class OperationsScreen(Screen):
     ]
 
     def __init__(
-        self, operations: Dict[str, Dict], command_executor: CommandExecutor | None
+        self, operations: dict[str, dict], command_executor: CommandExecutor | None
     ):
         """Initialize operations screen.
 
@@ -49,7 +50,7 @@ class OperationsScreen(Screen):
         if not self.command_executor:
             yield Container(
                 Static(
-                    "❌ Command executor not available\n"
+                    "Command executor not available\n"
                     "Cannot execute operations without proper setup.",
                     classes="error-message",
                 ),
@@ -98,7 +99,10 @@ class OperationsScreen(Screen):
         if not self.command_executor:
             return
 
-        table = self.query_one("#operations-table", DataTable)
+        try:
+            table = self.query_one("#operations-table", DataTable)
+        except Exception:
+            return
 
         # Add columns
         table.add_columns("Operation", "Command/Script", "Description")
@@ -122,7 +126,7 @@ class OperationsScreen(Screen):
 
         # Select first row if available
         if self._operation_list:
-            table.cursor_row = 0
+            table.move_cursor(row=0)
             self._selected_operation = self._operation_list[0]
 
     def _update_operation_details(self) -> None:
@@ -131,7 +135,11 @@ class OperationsScreen(Screen):
             return
 
         op_data = self.operations.get(self._selected_operation, {})
-        details_widget = self.query_one("#operation-details", Static)
+
+        try:
+            details_widget = self.query_one("#operation-details", Static)
+        except Exception:
+            return
 
         details = [
             f"Operation: {self._selected_operation.replace('_', ' ').title()}",
@@ -157,16 +165,17 @@ class OperationsScreen(Screen):
         destructive_ops = ["clean", "restore"]
         if any(dest in self._selected_operation.lower() for dest in destructive_ops):
             details.append("")
-            details.append("⚠️  WARNING: This is a potentially destructive operation!")
-            details.append(
-                "   Make sure you understand what it does before proceeding."
-            )
+            details.append("WARNING: This is a potentially destructive operation!")
+            details.append("Make sure you understand what it does before proceeding.")
 
         details_widget.update("\n".join(details))
 
     def _get_selected_operation(self) -> str | None:
         """Get currently selected operation."""
-        table = self.query_one("#operations-table", DataTable)
+        try:
+            table = self.query_one("#operations-table", DataTable)
+        except Exception:
+            return self._operation_list[0] if self._operation_list else None
 
         if table.cursor_row is not None and 0 <= table.cursor_row < len(
             self._operation_list
@@ -197,8 +206,10 @@ class OperationsScreen(Screen):
         docker_available = self.command_executor.check_docker_available()
         compose_available = self.command_executor.check_docker_compose_available()
 
-        status_msg = f"Docker: {'✅' if docker_available else '❌'}"
-        status_msg += f" | Compose: {'✅' if compose_available else '❌'}"
+        status_msg = f"Docker: {'Available' if docker_available else 'Unavailable'}"
+        status_msg += (
+            f" | Compose: {'Available' if compose_available else 'Unavailable'}"
+        )
 
         self.notify(f"Status refreshed - {status_msg}")
 
@@ -229,8 +240,11 @@ class OperationsScreen(Screen):
                 return
 
         # Clear previous output
-        output_widget = self.query_one("#output-content", Static)
-        output_widget.update("Executing operation...")
+        try:
+            output_widget = self.query_one("#output-content", Static)
+            output_widget.update("Executing operation...")
+        except Exception:
+            pass
 
         # Execute the operation
         if "command" in op_data:
@@ -276,12 +290,20 @@ class OperationsScreen(Screen):
 
     def _display_result(self, result: CommandResult) -> None:
         """Display command execution result."""
-        output_widget = self.query_one("#output-content", Static)
+        try:
+            output_widget = self.query_one("#output-content", Static)
+        except Exception:
+            # Widget not available, just notify user
+            if result.success:
+                self.notify("Operation completed successfully")
+            else:
+                self.notify("Operation failed", severity="error")
+            return
 
         output_lines = [
             f"Command: {result.command}",
             f"Exit Code: {result.return_code}",
-            f"Success: {'✅' if result.success else '❌'}",
+            f"Success: {'Yes' if result.success else 'No'}",
             "",
         ]
 
@@ -315,10 +337,10 @@ class OperationsScreen(Screen):
 
     async def _show_confirmation(self, title: str, message: str) -> bool:
         """Show confirmation dialog."""
-        # For now, we'll just return True
-        # In a real implementation, you'd create a modal dialog
-        # This is a simplified version
-        return True
+        from .confirmation import ConfirmationScreen
+
+        result = await self.app.push_screen_wait(ConfirmationScreen(title, message))
+        return result
 
     # Button event handlers
     def on_button_pressed(self, event: Button.Pressed) -> None:

@@ -2,7 +2,7 @@
 
 set -e  # Exit on any error
 
-echo "Setting up TUI dependencies..."
+echo "Setting up development dependencies..."
 
 # Parse command-line flags
 UPGRADE_FLAG=""
@@ -27,15 +27,26 @@ if ! command -v pip-compile &> /dev/null; then
     pip install pip-tools
 fi
 
-# Compile requirements.in to requirements.txt with pinned versions
+# Compile dev.requirements.in to dev.requirements.txt with pinned versions
 # Use --resolver=backtracking for explicit resolver choice
 # Pass --upgrade flag if specified to force latest compatible versions
-echo "Compiling requirements.in to requirements.txt..."
-pip-compile --resolver=backtracking $UPGRADE_FLAG requirements.in
+echo "Compiling dev.requirements.in to dev.requirements.txt..."
+pip-compile --resolver=backtracking $UPGRADE_FLAG dev.requirements.in
 
-# Install dependencies from the compiled requirements.txt
+# Install dependencies from the compiled dev.requirements.txt
 echo "Installing dependencies..."
-pip install -r requirements.txt
+pip install -r dev.requirements.txt
 
-echo "Dependencies installed successfully"
-echo "Run 'source env/bin/activate && python -m src.main' to start the TUI"
+echo "Development dependencies installed successfully"
+echo ""
+echo "Available tools:"
+echo "  - pytest:     Run tests"
+echo "  - black:      Format code"
+echo "  - ruff:       Lint code"
+echo "  - mypy:       Type check"
+echo ""
+echo "Use make commands for convenience:"
+echo "  - make test"
+echo "  - make format"
+echo "  - make lint"
+echo "  - make type-check"

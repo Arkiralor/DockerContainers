@@ -186,7 +186,7 @@ curl -X GET "localhost:9200/_cat/nodes?v"
 
 ```bash
 # For development, disable bootstrap checks
-echo "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m -Des.enforce.bootstrap.checks=false" >> opensearch/.env
+echo "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m -Des.enforce.bootstrap.checks=false" >> src/opensearch/.env
 ```
 
 ### Memory Lock Issues  
@@ -209,13 +209,64 @@ ulimits:
 
 **Solutions**:
 
-```bash  
+```bash
 # Disable security for development
-echo "PLUGINS_SECURITY_DISABLED=true" >> opensearch/.env
+echo "PLUGINS_SECURITY_DISABLED=true" >> src/opensearch/.env
 
 # Or configure proper certificates
 # See OpenSearch security documentation
 ```
+
+## Terminal UI (TUI)
+
+### TUI Won't Start
+
+**Symptoms**: Repository root not found error or import errors
+
+**Diagnosis**:
+
+```bash
+# Check Python version
+python --version  # Should be 3.10+
+
+# Check if in repository
+ls Makefile  # Should exist
+
+# Verify virtual environment
+source src/gui/tui/env/bin/activate
+python -m src.main check
+```
+
+**Solutions**:
+
+1. Ensure you are in the DockerContainers repository
+2. Activate virtual environment: `source src/gui/tui/env/bin/activate`
+3. Install dependencies: `cd src/gui/tui && ./.scripts/install.sh`
+4. Use `--repository-root` flag if needed
+
+### Docker Connection Errors in TUI
+
+**Symptoms**: TUI shows "Docker not connected" or services unavailable
+
+**Solutions**:
+
+1. Ensure Docker Desktop is running
+2. Test Docker connection: `docker version`
+3. Use `--no-docker-check` to skip connectivity check
+4. Restart Docker daemon
+
+### TUI Crashes or Freezes
+
+**Symptoms**: Application hangs, crashes, or shows errors during operation
+
+**Solutions**:
+
+1. Enable debug mode: `python -m src.main --debug`
+2. Check recent stability fixes in TUI CHANGELOG
+3. Ensure all dependencies are up to date
+4. Report crash with debug output
+
+For detailed TUI troubleshooting, see [TUI README](../src/gui/tui/README.md#troubleshooting).
 
 ## Network Issues
 

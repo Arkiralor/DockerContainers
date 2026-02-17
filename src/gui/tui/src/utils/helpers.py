@@ -3,10 +3,9 @@
 import os
 import sys
 from pathlib import Path
-from typing import Optional
 
 
-def find_repository_root(start_path: Optional[str] = None) -> Optional[Path]:
+def find_repository_root(start_path: str | None = None) -> Path | None:
     """Find the Docker containers repository root.
 
     Args:

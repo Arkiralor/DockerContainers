@@ -73,7 +73,7 @@ class DockerTUIApp(App):
         if not self.command_executor:
             yield Container(
                 Static(
-                    f"❌ Error initializing command executor:\n{getattr(self, '_executor_error', 'Unknown error')}",
+                    f"ERROR: Error initializing command executor:\n{getattr(self, '_executor_error', 'Unknown error')}",
                     id="error-message",
                 ),
                 classes="error-container",
@@ -81,7 +81,7 @@ class DockerTUIApp(App):
         elif not self.docker_client.is_connected():
             yield Container(
                 Static(
-                    "⚠️  Docker is not running or not accessible.\n"
+                    "WARNING: Docker is not running or not accessible.\n"
                     "Some features may not work correctly.\n"
                     "Please start Docker Desktop or ensure Docker daemon is running.",
                     id="warning-message",
@@ -134,7 +134,10 @@ class DockerTUIApp(App):
         if self._refresh_task:
             self._refresh_task.cancel()
 
-        self._refresh_task = asyncio.create_task(self._auto_refresh_loop())
+        try:
+            self._refresh_task = asyncio.create_task(self._auto_refresh_loop())
+        except Exception as e:
+            self.notify(f"Failed to start auto-refresh: {e}", severity="error")
 
     def _stop_auto_refresh(self) -> None:
         """Stop auto-refresh task."""
@@ -158,11 +161,11 @@ class DockerTUIApp(App):
         if not self.docker_client.is_connected():
             # Try to reconnect
             if not self.docker_client.reconnect():
-                self._update_connection_status("❌ Disconnected")
+                self._update_connection_status("Disconnected")
                 return
 
         # Update connection status
-        self._update_connection_status("✅ Connected")
+        self._update_connection_status("Connected")
 
         # Get container statuses
         container_names = [service.container_name for service in self.services]
@@ -174,19 +177,23 @@ class DockerTUIApp(App):
         self.last_refresh = datetime.now()
 
         # Update status text
-        status_text = self.query_one("#status-text", Static)
-        if status_text:
+        try:
+            status_text = self.query_one("#status-text", Static)
             running_count = len(
                 [s for s in self.container_statuses.values() if s.status == "running"]
             )
             total_count = len(self.container_statuses)
             status_text.update(f"Services: {running_count}/{total_count} running")
+        except Exception:
+            pass
 
     def _update_connection_status(self, status: str) -> None:
         """Update connection status display."""
-        connection_status = self.query_one("#connection-status", Static)
-        if connection_status:
+        try:
+            connection_status = self.query_one("#connection-status", Static)
             connection_status.update(status)
+        except Exception:
+            pass
 
     def action_refresh(self) -> None:
         """Refresh application state."""
@@ -245,9 +252,9 @@ class DockerTUIApp(App):
 
         # Show result notification
         if result.success:
-            self.notify(f"✅ {description or command} completed successfully")
+            self.notify(f"{description or command} completed successfully")
         else:
-            self.notify(f"❌ {description or command} failed", severity="error")
+            self.notify(f"{description or command} failed", severity="error")
 
         # Refresh status after command execution
         self.refresh_status()

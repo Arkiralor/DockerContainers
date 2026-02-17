@@ -11,33 +11,33 @@ help: ## Show this help message
 	@echo ""
 
 setup: ## Initial setup: create .env files and data directories
-	@echo "🚀 Running initial setup..."
+	@echo "Running initial setup..."
 	@./scripts/setup.sh
 
 start: ## Start all services
-	@echo "▶️  Starting all services..."
+	@echo "Starting all services..."
 	@./scripts/start-all.sh
 
 stop: ## Stop all services
-	@echo "⏸️  Stopping all services..."
+	@echo "Stopping all services..."
 	@./scripts/stop-all.sh
 
 restart: stop start ## Restart all services
-	@echo "🔄 Services restarted"
+	@echo "Services restarted"
 
 status: ## Show status of all services
 	@./scripts/status.sh
 
 backup: ## Create backups of all services
-	@echo "💾 Creating backups..."
+	@echo "Creating backups..."
 	@./scripts/backup.sh
 
 restore: ## Restore services from backup
-	@echo "🔄 Starting restore process..."
+	@echo "Starting restore process..."
 	@./scripts/restore.sh
 
 test: ## Run automated tests
-	@echo "🧪 Running tests..."
+	@echo "Running tests..."
 	@cd test && ./test.sh
 
 # Linting targets
@@ -72,16 +72,16 @@ lint-compose: ## Validate Docker Compose files
 	@echo "Docker Compose files are valid"
 
 clean: ## Remove all containers, volumes, and data (WARNING: DATA LOSS)
-	@echo "⚠️  WARNING: This will remove all containers, volumes, and data!"
+	@echo "WARNING: This will remove all containers, volumes, and data!"
 	@read -p "Are you sure? (yes/no): " confirm; \
 	if [ "$$confirm" = "yes" ]; then \
-		echo "🧹 Cleaning up..."; \
+		echo "Cleaning up..."; \
 		./scripts/stop-all.sh; \
 		docker volume rm postgresql_postgres_data redis_redis_data opensearch_opensearch_data 2>/dev/null || true; \
 		rm -rf src/postgresql/data src/redis/data src/opensearch/data 2>/dev/null || true; \
-		echo "✅ Cleanup complete"; \
+		echo "Cleanup complete"; \
 	else \
-		echo "❌ Cleanup cancelled"; \
+		echo "Cleanup cancelled"; \
 	fi
 
 logs-redis: ## Show Redis logs
@@ -98,45 +98,45 @@ logs-dashboards: ## Show OpenSearch Dashboards logs
 
 # Individual service commands
 start-redis: ## Start only Redis
-	@echo "▶️  Starting Redis..."
+	@echo "Starting Redis..."
 	@cd src/redis && docker-compose up -d
 
 start-postgres: ## Start only PostgreSQL
-	@echo "▶️  Starting PostgreSQL..."
+	@echo "Starting PostgreSQL..."
 	@cd src/postgresql && docker-compose up -d
 
 start-opensearch: ## Start only OpenSearch
-	@echo "▶️  Starting OpenSearch..."
+	@echo "Starting OpenSearch..."
 	@cd src/opensearch && docker-compose up -d
 
 stop-redis: ## Stop Redis
-	@echo "⏸️  Stopping Redis..."
+	@echo "Stopping Redis..."
 	@cd src/redis && docker-compose stop
 
 stop-postgres: ## Stop PostgreSQL
-	@echo "⏸️  Stopping PostgreSQL..."
+	@echo "Stopping PostgreSQL..."
 	@cd src/postgresql && docker-compose stop
 
 stop-opensearch: ## Stop OpenSearch
-	@echo "⏸️  Stopping OpenSearch..."
+	@echo "Stopping OpenSearch..."
 	@cd src/opensearch && docker-compose stop
 
 restart-redis: stop-redis start-redis ## Restart Redis
-	@echo "🔄 Redis restarted"
+	@echo "Redis restarted"
 
 restart-postgres: stop-postgres start-postgres ## Restart PostgreSQL
-	@echo "🔄 PostgreSQL restarted"
+	@echo "PostgreSQL restarted"
 
 restart-opensearch: stop-opensearch start-opensearch ## Restart OpenSearch
-	@echo "🔄 OpenSearch restarted"
+	@echo "OpenSearch restarted"
 
 # Multi-Redis specific
 start-multi-redis: ## Start multi-instance Redis setup
-	@echo "▶️  Starting multi-instance Redis..."
+	@echo "Starting multi-instance Redis..."
 	@cd src/redis && docker-compose -f docker-compose.multi-redis.yml up -d
 
 stop-multi-redis: ## Stop multi-instance Redis setup
-	@echo "⏸️  Stopping multi-instance Redis..."
+	@echo "Stopping multi-instance Redis..."
 	@cd src/redis && docker-compose -f docker-compose.multi-redis.yml stop
 
 # Development helpers
