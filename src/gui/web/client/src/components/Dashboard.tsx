@@ -2,6 +2,21 @@ import ServiceList from './ServiceList'
 import SystemInfoServices from './SystemInfoServices'
 import { Container } from 'lucide-react'
 
+/**
+ * Dashboard Component
+ *
+ * Main application view that serves as the entry point for the Docker Container Manager UI.
+ * Provides a complete layout with:
+ * - Header with application title and description
+ * - System statistics dashboard (SystemInfoServices)
+ * - Service management grid (ServiceList)
+ * - Footer with project information
+ *
+ * This is the primary component rendered at the root route and displays all configured
+ * services (PostgreSQL, Redis, OpenSearch) with their current status and management controls.
+ *
+ * @returns JSX element displaying the full dashboard layout
+ */
 export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-900 text-white">

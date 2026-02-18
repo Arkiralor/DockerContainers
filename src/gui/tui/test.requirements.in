@@ -1,0 +1,11 @@
+# Test Dependencies
+# This file includes runtime dependencies plus test-specific packages
+
+-r requirements.in
+
+# Test framework and plugins
+pytest>=9.0.2
+pytest-mock>=3.11.1
+pytest-cov>=4.1.0
+pytest-xdist>=3.3.1
+pytest-asyncio>=0.21.1

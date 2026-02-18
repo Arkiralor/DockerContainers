@@ -1,3 +1,15 @@
+/**
+ * Configuration for all Docker services managed by this application.
+ *
+ * This file defines metadata and operational details for each service including:
+ * - Service identification (id, name, description)
+ * - Docker container name for status queries
+ * - Exposed ports
+ * - Make commands for start/stop/logs operations
+ * - Dependencies on other services
+ *
+ * The configuration is frozen (as const) to prevent runtime modifications.
+ */
 export const SERVICES = {
   postgresql: {
     id: 'postgresql',
@@ -52,12 +64,35 @@ export const SERVICES = {
   }
 } as const
 
+/**
+ * Type representing valid service IDs.
+ * Derived from the keys of the SERVICES object.
+ */
 export type ServiceId = keyof typeof SERVICES
 
+/**
+ * Retrieves all configured services as an array.
+ *
+ * @returns Array of service configuration objects
+ *
+ * @example
+ * const allServices = getServices()
+ * allServices.forEach(service => console.log(service.name))
+ */
 export function getServices() {
   return Object.values(SERVICES)
 }
 
+/**
+ * Retrieves a specific service configuration by ID.
+ *
+ * @param id - Service identifier (e.g., "redis", "postgres", "opensearch")
+ * @returns Service configuration object or undefined if not found
+ *
+ * @example
+ * const redis = getService('redis')
+ * console.log(redis.ports) // [6379]
+ */
 export function getService(id: string) {
   return SERVICES[id as ServiceId]
 }

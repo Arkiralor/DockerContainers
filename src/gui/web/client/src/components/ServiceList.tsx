@@ -9,6 +9,25 @@ import {
 } from '@/hooks/useServices'
 import { AlertCircle, RefreshCw } from 'lucide-react'
 
+/**
+ * ServiceList Component
+ *
+ * Displays a grid of service cards for all configured services (PostgreSQL, Redis, OpenSearch).
+ * Provides functionality to:
+ * - View real-time service status (running, stopped, not created)
+ * - Start and stop services via make commands
+ * - View detailed service information
+ * - Manually refresh service status
+ *
+ * Features:
+ * - Auto-refresh every 5 seconds via useServices hook
+ * - Loading state with spinner
+ * - Error handling with retry button
+ * - Confirmation dialog for stop operations
+ * - Running/total count display
+ *
+ * @returns JSX element displaying the service list or appropriate loading/error states
+ */
 export default function ServiceList() {
   const { data: services, isLoading, error, refetch } = useServices()
   const startService = useStartService()

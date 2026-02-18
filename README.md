@@ -17,6 +17,7 @@ This repository provides high-grade Docker Compose setups for popular open-sourc
 ## Table of Contents
 
 - [Quick Start](#quick-start)
+- [Management Interfaces](#management-interfaces)
 - [Repository Structure](#repository-structure)
 - [Service Details](#service-details)
 - [Using the Makefile](#using-the-makefile)
@@ -72,6 +73,48 @@ That's it! Your services are now running:
 ./scripts/status.sh
 ```
 
+## Management Interfaces
+
+In addition to command-line tools, this repository provides graphical interfaces for managing services:
+
+### Terminal UI (TUI)
+
+**Location**: `src/gui/tui/`
+
+A keyboard-driven terminal interface for managing Docker containers with real-time monitoring and log viewing.
+
+**Features**:
+- Service list with live status updates
+- Real-time log viewer with search and follow capabilities
+- System operations execution
+- Comprehensive error handling and stability improvements
+- Memory-safe operation with strict resource bounds
+
+**Quick Start**:
+```bash
+cd src/gui/tui
+source env/bin/activate
+python -m src.main
+```
+
+[Full TUI Documentation](src/gui/tui/README.md)
+
+### Web UI
+
+**Location**: `src/gui/web/`
+
+A web-based interface for container management that runs on bare metal.
+
+**Features**:
+- Service monitoring dashboard
+- Container lifecycle management
+- Log viewing and analysis
+- Configuration management
+
+[Full Web UI Documentation](src/gui/web/README.md)
+
+---
+
 ## Repository Structure
 
 ```
@@ -96,6 +139,15 @@ DockerContainers/
 │   │   ├── .env.example         # Environment template
 │   │   ├── config/              # OpenSearch configuration
 │   │   └── README.md            # OpenSearch documentation
+│   │
+│   ├── gui/                 # Management interfaces
+│   │   ├── tui/             # Terminal-based UI
+│   │   │   ├── src/         # TUI source code
+│   │   │   ├── tests/       # TUI test suite
+│   │   │   ├── README.md    # TUI documentation
+│   │   │   └── CHANGELOG.md # TUI version history
+│   │   └── web/             # Web-based UI
+│   │       └── README.md    # Web UI documentation
 │   │
 │   └── network/             # Optional shared network
 │
@@ -458,6 +510,43 @@ Test Summary
 Total:  30
 Passed: 30
 Failed: 0
+
+### Web GUI Testing
+
+The web-based and terminal-based management interfaces have comprehensive test suites:
+
+**Client Testing** (React Frontend):
+```bash
+cd src/gui/web/client
+npm test                  # Watch mode
+npm run test:run          # Single run
+npm run test:coverage     # With coverage report
+```
+
+**Server Testing** (Express API):
+```bash
+cd src/gui/web/server
+npm test                  # Watch mode
+npm run test:run          # Single run
+npm run test:coverage     # With coverage report
+```
+
+**TUI Testing** (Python Terminal UI):
+```bash
+cd src/gui/tui
+source env/bin/activate
+pytest                    # All tests
+pytest --cov=src          # With coverage
+pytest -m unit            # Unit tests only
+```
+
+**Testing Standards**:
+- **Coverage Target**: 80%+ for all components
+- **Test Frameworks**: Vitest (client/server), pytest (TUI)
+- **Test Types**: Unit, integration, and end-to-end tests
+- **Mocking**: All external dependencies (Docker, APIs, WebSocket)
+
+**Comprehensive Testing Guide**: See [docs/testing.md](docs/testing.md) for detailed patterns, best practices, and troubleshooting.
 
 All tests passed!
 ```

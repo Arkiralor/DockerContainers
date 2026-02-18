@@ -67,42 +67,42 @@ Docker Containers Test Suite
 
 Docker Tests
 ---------------
-✓ Docker daemon is running
+[PASS] Docker daemon is running
 
 PostgreSQL Tests
 -------------------
-✓ PostgreSQL container is running
-✓ PostgreSQL health check passes
-✓ PostgreSQL accepts connections
-✓ PostgreSQL port 5432 is accessible
-✓ PostgreSQL volume exists
+[PASS] PostgreSQL container is running
+[PASS] PostgreSQL health check passes
+[PASS] PostgreSQL accepts connections
+[PASS] PostgreSQL port 5432 is accessible
+[PASS] PostgreSQL volume exists
 
 Redis Tests
 --------------
-✓ Redis container is running
-✓ Redis health check passes
-✓ Redis read/write operations work
-✓ Redis port 6379 is accessible
-✓ Redis volume exists
+[PASS] Redis container is running
+[PASS] Redis health check passes
+[PASS] Redis read/write operations work
+[PASS] Redis port 6379 is accessible
+[PASS] Redis volume exists
 
 OpenSearch Tests
 -------------------
-✓ OpenSearch container is running
-✓ OpenSearch health endpoint responds
-✓ OpenSearch cluster status is healthy
-✓ OpenSearch port 9200 is accessible
-✓ OpenSearch Dashboards container is running
-✓ OpenSearch Dashboards port 5601 is accessible
-✓ OpenSearch volume exists
+[PASS] OpenSearch container is running
+[PASS] OpenSearch health endpoint responds
+[PASS] OpenSearch cluster status is healthy
+[PASS] OpenSearch port 9200 is accessible
+[PASS] OpenSearch Dashboards container is running
+[PASS] OpenSearch Dashboards port 5601 is accessible
+[PASS] OpenSearch volume exists
 
 Script Tests
 ---------------
-✓ Backup script exists and is executable
-✓ Restore script exists and is executable
-✓ Setup script exists and is executable
-✓ Start-all script exists and is executable
-✓ Stop-all script exists and is executable
-✓ Status script exists and is executable
+[PASS] Backup script exists and is executable
+[PASS] Restore script exists and is executable
+[PASS] Setup script exists and is executable
+[PASS] Start-all script exists and is executable
+[PASS] Stop-all script exists and is executable
+[PASS] Status script exists and is executable
 
 ================================
 Test Summary
@@ -194,10 +194,10 @@ print_result() {
     TESTS_TOTAL=$((TESTS_TOTAL + 1))
 
     if [ "$result" -eq 0 ]; then
-        echo "✓ $test_name"
+        echo -e "${GREEN}[PASS]${NC} $test_name"
         TESTS_PASSED=$((TESTS_PASSED + 1))
     else
-        echo "✗ $test_name"
+        echo -e "${RED}[FAIL]${NC} $test_name"
         TESTS_FAILED=$((TESTS_FAILED + 1))
     fi
 }
@@ -506,9 +506,9 @@ make lint-compose            # Validate Docker Compose files
 
 - [Main Repository README](../README.md)
 - [Troubleshooting Guide](../docs/troubleshooting.md)
-- [PostgreSQL Tests](../postgresql/README.md)
-- [Redis Tests](../redis/README.md)
-- [OpenSearch Tests](../opensearch/README.md)
+- [PostgreSQL Tests](../src/postgresql/README.md)
+- [Redis Tests](../src/redis/README.md)
+- [OpenSearch Tests](../src/opensearch/README.md)
 
 ## Support
 

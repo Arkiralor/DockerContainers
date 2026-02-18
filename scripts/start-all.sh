@@ -5,7 +5,7 @@
 
 set -e
 
-echo "🚀 Starting all Docker services..."
+echo "Starting all Docker services..."
 
 # Array of service directories
 services=("src/redis" "src/postgresql" "src/opensearch")
@@ -13,48 +13,49 @@ services=("src/redis" "src/postgresql" "src/opensearch")
 # Function to start a service
 start_service() {
     local service=$1
-    echo "📦 Starting ${service}..."
+    echo "Starting ${service}..."
 
     if [ -d "$service" ] && [ -f "${service}/docker-compose.yml" ]; then
-        cd "$service"
+        # Use subshell to avoid directory navigation issues
+        (
+            cd "$service" || exit 1
 
-        # Check if .env file exists
-        if [ ! -f ".env" ]; then
-            echo "⚠️  No .env file found for ${service}. Creating from .env.example..."
-            if [ -f ".env.example" ]; then
-                cp ".env.example" ".env"
-            else
-                echo "❌ No .env.example found for ${service}. Please create .env file manually."
-                cd ..
-                return 1
+            # Check if .env file exists
+            if [ ! -f ".env" ]; then
+                echo "WARNING: No .env file found for ${service}. Creating from example.env..."
+                if [ -f "example.env" ]; then
+                    cp "example.env" ".env"
+                else
+                    echo "ERROR: No example.env found for ${service}. Please create .env file manually."
+                    exit 1
+                fi
             fi
-        fi
 
-        # Start the service
-        if command -v docker-compose &> /dev/null; then
-            docker-compose up -d
-        else
-            docker compose up -d
-        fi
+            # Start the service
+            if command -v docker-compose &> /dev/null; then
+                docker-compose up -d
+            else
+                docker compose up -d
+            fi
 
-        if [ $? -eq 0 ]; then
-            echo "✅ ${service} started successfully"
-        else
-            echo "❌ Failed to start ${service}"
-        fi
-
-        cd ..
+            if [ $? -eq 0 ]; then
+                echo "SUCCESS: ${service} started successfully"
+            else
+                echo "ERROR: Failed to start ${service}"
+                exit 1
+            fi
+        )
     else
-        echo "⚠️  Service directory ${service} not found or missing docker-compose.yml"
+        echo "WARNING: Service directory ${service} not found or missing docker-compose.yml"
     fi
 }
 
 # Function to wait for services to be healthy
 wait_for_services() {
-    echo "⏳ Waiting for services to be ready..."
+    echo "Waiting for services to be ready..."
     sleep 5
 
-    echo "📋 Service status:"
+    echo "Service status:"
     ./scripts/status.sh
 }
 
@@ -62,7 +63,7 @@ wait_for_services() {
 main() {
     # Ensure we're in the right directory
     if [ ! -f "CONTRIBUTING.md" ]; then
-        echo "❌ Please run this script from the repository root directory"
+        echo "ERROR: Please run this script from the repository root directory"
         exit 1
     fi
 
@@ -75,7 +76,7 @@ main() {
     wait_for_services
 
     echo ""
-    echo "🎉 All services startup initiated!"
+    echo "All services startup initiated"
     echo "Use './scripts/status.sh' to check service health"
     echo "Use './scripts/stop-all.sh' to stop all services"
 }

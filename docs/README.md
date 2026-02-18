@@ -16,10 +16,15 @@ This directory contains additional documentation, guides, and resources for the 
 
 ### Service Documentation
 
-- **[PostgreSQL](../postgresql/README.md)** - PostgreSQL setup and usage guide
-- **[Redis](../redis/README.md)** - Redis single and multi-instance guide
-- **[OpenSearch](../opensearch/README.md)** - OpenSearch and Dashboards guide
+- **[PostgreSQL](../src/postgresql/README.md)** - PostgreSQL setup and usage guide
+- **[Redis](../src/redis/README.md)** - Redis single and multi-instance guide
+- **[OpenSearch](../src/opensearch/README.md)** - OpenSearch and Dashboards guide
 - **[Testing](../test/README.md)** - Automated test suite documentation
+
+### Management Interface Documentation
+
+- **[Terminal UI (TUI)](../src/gui/tui/README.md)** - Keyboard-driven container management interface
+- **[Web UI](../src/gui/web/README.md)** - Browser-based service monitoring dashboard
 
 ### Additional Guides
 
@@ -48,25 +53,31 @@ New to this repository? Start with these steps:
 ### Service Guides
 
 #### PostgreSQL
-- [PostgreSQL Quick Start](../postgresql/README.md#quick-start)
-- [Connection Examples](../postgresql/README.md#usage-examples)
-- [Common Operations](../postgresql/README.md#common-operations)
-- [Performance Tuning](../postgresql/README.md#performance-tuning)
-- [Troubleshooting PostgreSQL](../postgresql/README.md#troubleshooting)
+- [PostgreSQL Quick Start](../src/postgresql/README.md#quick-start)
+- [Connection Examples](../src/postgresql/README.md#usage-examples)
+- [Common Operations](../src/postgresql/README.md#common-operations)
+- [Performance Tuning](../src/postgresql/README.md#performance-tuning)
+- [Troubleshooting PostgreSQL](../src/postgresql/README.md#troubleshooting)
 
 #### Redis
-- [Redis Quick Start](../redis/README.md#quick-start)
-- [Single Instance Guide](../redis/README.md#single-instance)
-- [Multi-Instance Guide](../redis/README.md#multi-instance-5-redis-servers)
-- [Redis Commands](../redis/README.md#common-operations)
-- [Troubleshooting Redis](../redis/README.md#troubleshooting)
+- [Redis Quick Start](../src/redis/README.md#quick-start)
+- [Single Instance Guide](../src/redis/README.md#single-instance)
+- [Multi-Instance Guide](../src/redis/README.md#multi-instance-5-redis-servers)
+- [Redis Commands](../src/redis/README.md#common-operations)
+- [Troubleshooting Redis](../src/redis/README.md#troubleshooting)
 
 #### OpenSearch
-- [OpenSearch Quick Start](../opensearch/README.md#quick-start)
-- [API Operations](../opensearch/README.md#usage-examples)
-- [Using Dashboards](../opensearch/README.md#opensearch-dashboards)
-- [Search Queries](../opensearch/README.md#search-operations)
-- [Troubleshooting OpenSearch](../opensearch/README.md#troubleshooting)
+- [OpenSearch Quick Start](../src/opensearch/README.md#quick-start)
+- [API Operations](../src/opensearch/README.md#usage-examples)
+- [Using Dashboards](../src/opensearch/README.md#opensearch-dashboards)
+- [Search Queries](../src/opensearch/README.md#search-operations)
+- [Troubleshooting OpenSearch](../src/opensearch/README.md#troubleshooting)
+
+#### Management Interfaces
+- [TUI Installation](../src/gui/tui/README.md#installation)
+- [TUI Navigation](../src/gui/tui/README.md#navigation)
+- [TUI Troubleshooting](../src/gui/tui/README.md#troubleshooting)
+- [Web UI Setup](../src/gui/web/README.md)
 
 ### Operations
 
@@ -100,9 +111,10 @@ New to this repository? Start with these steps:
 - **[Full Troubleshooting Guide](troubleshooting.md)** - Comprehensive issue resolution
 - [Quick Diagnostics](../README.md#quick-diagnostics)
 - [Common Issues](../README.md#common-issues)
-- [PostgreSQL Issues](../postgresql/README.md#troubleshooting)
-- [Redis Issues](../redis/README.md#troubleshooting)
-- [OpenSearch Issues](../opensearch/README.md#troubleshooting)
+- [PostgreSQL Issues](../src/postgresql/README.md#troubleshooting)
+- [Redis Issues](../src/redis/README.md#troubleshooting)
+- [OpenSearch Issues](../src/opensearch/README.md#troubleshooting)
+- [TUI Issues](../src/gui/tui/README.md#troubleshooting)
 
 ### Advanced Topics
 
@@ -175,24 +187,35 @@ DockerContainers/
 ├── docs/                      # This directory
 │   ├── README.md              # This file
 │   ├── troubleshooting.md     # Issue resolution guide
-│   └── services-overview.md   # Detailed service info
+│   ├── services-overview.md   # Detailed service info
+│   └── linting.md             # Code quality documentation
 │
-├── postgresql/                # PostgreSQL service
-│   ├── docker-compose.yml
-│   ├── config/
-│   ├── initdb.d/
-│   └── README.md              # PostgreSQL documentation
-│
-├── redis/                     # Redis service
-│   ├── docker-compose.yml
-│   ├── docker-compose.multi-redis.yml
-│   ├── config/
-│   └── README.md              # Redis documentation
-│
-├── opensearch/                # OpenSearch service
-│   ├── docker-compose.yml
-│   ├── config/
-│   └── README.md              # OpenSearch documentation
+├── src/                       # Source directory for all services
+│   ├── postgresql/            # PostgreSQL service
+│   │   ├── docker-compose.yml
+│   │   ├── config/
+│   │   ├── initdb.d/
+│   │   └── README.md          # PostgreSQL documentation
+│   │
+│   ├── redis/                 # Redis service
+│   │   ├── docker-compose.yml
+│   │   ├── docker-compose.multi-redis.yml
+│   │   ├── config/
+│   │   └── README.md          # Redis documentation
+│   │
+│   ├── opensearch/            # OpenSearch service
+│   │   ├── docker-compose.yml
+│   │   ├── config/
+│   │   └── README.md          # OpenSearch documentation
+│   │
+│   └── gui/                   # Management interfaces
+│       ├── tui/               # Terminal-based UI
+│       │   ├── src/           # TUI source code
+│       │   ├── tests/         # TUI test suite
+│       │   ├── README.md      # TUI documentation
+│       │   └── CHANGELOG.md   # TUI version history
+│       └── web/               # Web-based UI
+│           └── README.md      # Web UI documentation
 │
 ├── scripts/                   # Management scripts
 │   ├── setup.sh
@@ -216,22 +239,26 @@ DockerContainers/
 ### Easy to Use
 - One-command setup and start
 - Makefile with 25+ convenient commands
+- Terminal and web-based management interfaces
 - Clear documentation for everything
 
 ### Reliable
 - 30+ automated tests
 - Health checks on all services
 - Resource limits prevent issues
+- Comprehensive error handling in TUI
 
 ### Complete
 - Backup and restore capabilities
 - Comprehensive troubleshooting guides
 - Code examples in multiple languages
+- Real-time monitoring and log viewing
 
 ### Well-Documented
 - Service-specific READMEs
 - API usage examples
 - Common operations guides
+- Management interface documentation
 
 ## External Resources
 
@@ -299,6 +326,9 @@ This documentation is actively maintained. Last major update: **February 2026**
 
 ### Recent Updates
 - All README files updated with comprehensive guides
+- Added Terminal UI (TUI) for keyboard-driven container management
+- Added Web UI for browser-based service monitoring
+- TUI stability improvements (24 critical bugs fixed)
 - Added Makefile command reference
 - Added testing documentation
 - Enhanced troubleshooting guides
@@ -325,9 +355,10 @@ make logs-<service>          # View logs
 ### Most Visited Pages
 
 1. [Main README](../README.md) - Overview and quick start
-2. [PostgreSQL Guide](../postgresql/README.md) - Database documentation
-3. [Redis Guide](../redis/README.md) - Cache documentation
-4. [Troubleshooting](troubleshooting.md) - Issue resolution
+2. [PostgreSQL Guide](../src/postgresql/README.md) - Database documentation
+3. [Redis Guide](../src/redis/README.md) - Cache documentation
+4. [TUI Guide](../src/gui/tui/README.md) - Terminal interface documentation
+5. [Troubleshooting](troubleshooting.md) - Issue resolution
 
 ### Connection Strings
 

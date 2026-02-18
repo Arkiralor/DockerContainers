@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useContainer, useContainerLogs } from '@/hooks/useApi'
 import { Modal } from './Dialog'
 import { formatBytes, formatUptime } from '@shared/utils'
+import type { PortBinding, Mount } from '@shared/types'
 
 interface ContainerDetailsModalProps {
   isOpen: boolean
@@ -38,10 +39,10 @@ export default function ContainerDetailsModal({
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id as 'overview' | 'config' | 'logs')}
                 className={`px-4 py-2 font-medium transition-colors ${activeTab === tab.id
-                    ? 'text-white border-b-2 border-blue-500'
-                    : 'text-gray-400 hover:text-white'
+                  ? 'text-white border-b-2 border-blue-500'
+                  : 'text-gray-400 hover:text-white'
                   }`}
               >
                 {tab.label}
@@ -83,11 +84,11 @@ export default function ContainerDetailsModal({
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-3">Port Mappings</h3>
                   <div className="bg-gray-900 rounded p-4">
-                    {Object.entries(container.NetworkSettings.Ports).map(([port, bindings]: [string, any]) => (
+                    {Object.entries(container.NetworkSettings.Ports).map(([port, bindings]: [string, PortBinding[] | null]) => (
                       <div key={port} className="text-sm text-gray-300 mb-1">
                         <span className="font-mono">{port}</span>
                         {bindings && Array.isArray(bindings) && bindings.length > 0 && (
-                          <span> → {bindings.map((b: any) => `${b.HostIp}:${b.HostPort}`).join(', ')}</span>
+                          <span> → {bindings.map((b: PortBinding) => `${b.HostIp}:${b.HostPort}`).join(', ')}</span>
                         )}
                       </div>
                     ))}
@@ -99,7 +100,7 @@ export default function ContainerDetailsModal({
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-3">Volumes</h3>
                   <div className="bg-gray-900 rounded p-4">
-                    {container.Mounts.map((mount: any, idx: number) => (
+                    {container.Mounts.map((mount: Mount, idx: number) => (
                       <div key={idx} className="text-sm text-gray-300 mb-2">
                         <div className="font-mono">{mount.Source}</div>
                         <div className="text-gray-500">→ {mount.Destination}</div>

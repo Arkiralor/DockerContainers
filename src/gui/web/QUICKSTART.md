@@ -32,7 +32,7 @@ The server needs a `.env` file. Copy the example and modify if needed:
 
 ```bash
 cd server
-cp .env.example .env
+cp example.env .env
 ```
 
 Default configuration:

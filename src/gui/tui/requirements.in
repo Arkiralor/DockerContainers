@@ -1,0 +1,6 @@
+# Terminal UI Dependencies
+textual>=0.50.0
+docker>=7.0.0
+click>=8.1.0
+pyyaml>=6.0.1
+rich>=13.7.0
