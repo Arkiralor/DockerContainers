@@ -3,13 +3,23 @@
  *
  * This file defines metadata and operational details for each service including:
  * - Service identification (id, name, description)
- * - Docker container name for status queries
+ * - Docker container name for status queries (single services)
+ * - Container groups with individual containers (grouped services)
  * - Exposed ports
  * - Make commands for start/stop/logs operations
  * - Dependencies on other services
  *
  * The configuration is frozen (as const) to prevent runtime modifications.
  */
+
+interface ServiceContainer {
+  name: string
+  containerName: string
+  description: string
+  ports: number[]
+  makeCommands?: Record<string, string>
+}
+
 export const SERVICES = {
   postgresql: {
     id: 'postgresql',
@@ -39,28 +49,33 @@ export const SERVICES = {
   },
   opensearch: {
     id: 'opensearch',
-    name: 'OpenSearch',
-    description: 'OpenSearch Search Engine',
+    name: 'OpenSearch Stack',
+    description: 'OpenSearch engine and dashboards for search, analytics, and visualization',
     composeDir: 'src/opensearch',
-    containerName: 'opensearch-node',
-    ports: [9200, 9600],
     makeCommands: {
       start: 'start-opensearch',
-      stop: 'stop-opensearch',
-      logs: 'logs-opensearch'
-    }
-  },
-  dashboards: {
-    id: 'dashboards',
-    name: 'OpenSearch Dashboards',
-    description: 'OpenSearch Dashboards UI',
-    composeDir: 'src/opensearch',
-    containerName: 'opensearch-dashboards',
-    ports: [5601],
-    makeCommands: {
-      logs: 'logs-dashboards'
+      stop: 'stop-opensearch'
     },
-    dependsOn: 'opensearch'
+    containers: [
+      {
+        name: 'OpenSearch',
+        containerName: 'opensearch-node',
+        description: 'Search and analytics engine',
+        ports: [9200, 9600],
+        makeCommands: {
+          logs: 'logs-opensearch'
+        }
+      },
+      {
+        name: 'OpenSearch Dashboards',
+        containerName: 'opensearch-dashboards',
+        description: 'Web interface for data visualization',
+        ports: [5601],
+        makeCommands: {
+          logs: 'logs-dashboards'
+        }
+      }
+    ] as ServiceContainer[]
   }
 } as const
 

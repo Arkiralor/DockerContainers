@@ -100,50 +100,115 @@ class ServiceListScreen(Screen):
 
         # Add service rows
         for service in self.services:
-            status = self.container_statuses.get(service.container_name)
-
-            # Format status
-            status_text = "Unknown"
-            if status:
-                if status.status == "running":
-                    status_text = "Running"
-                elif status.status == "exited" or status.status == "stopped":
-                    status_text = "Stopped"
-                elif status.status == "not_found":
-                    status_text = "Not Created"
-                else:
-                    status_text = f"{status.status.title()}"
-
-            # Format health
-            health_text = "N/A"
-            if status and status.health:
-                if status.health == "healthy":
-                    health_text = "Healthy"
-                elif status.health == "unhealthy":
-                    health_text = "Unhealthy"
-                elif status.health == "starting":
-                    health_text = "Starting"
-
-            # Format ports
-            ports_text = ""
-            if service.ports:
-                ports_list = [f"{p.host}:{p.container}" for p in service.ports]
-                ports_text = ", ".join(ports_list)
-
-            # Add row
-            table.add_row(
-                service.name,
-                service.container_name,
-                status_text,
-                health_text,
-                ports_text,
-                (
+            # Check if this is a grouped service (has containers)
+            if service.containers:
+                # Add parent service row
+                table.add_row(
+                    f"{service.name} (Group)",
+                    f"{len(service.containers)} containers",
+                    "-",
+                    "-",
+                    "-",
                     service.description[:50] + "..."
                     if len(service.description) > 50
-                    else service.description
-                ),
-                key=service.id,
-            )
+                    else service.description,
+                    key=f"{service.id}-group",
+                )
+
+                # Add child container rows
+                for container in service.containers:
+                    status = self.container_statuses.get(container.container_name)
+
+                    # Format status
+                    status_text = "Unknown"
+                    if status:
+                        if status.status == "running":
+                            status_text = "Running"
+                        elif status.status == "exited" or status.status == "stopped":
+                            status_text = "Stopped"
+                        elif status.status == "not_found":
+                            status_text = "Not Created"
+                        else:
+                            status_text = f"{status.status.title()}"
+
+                    # Format health
+                    health_text = "N/A"
+                    if status and status.health:
+                        if status.health == "healthy":
+                            health_text = "Healthy"
+                        elif status.health == "unhealthy":
+                            health_text = "Unhealthy"
+                        elif status.health == "starting":
+                            health_text = "Starting"
+
+                    # Format ports
+                    ports_text = ""
+                    if container.ports:
+                        ports_list = [
+                            f"{p.host}:{p.container}" for p in container.ports
+                        ]
+                        ports_text = ", ".join(ports_list)
+
+                    # Add row with indentation indicator
+                    table.add_row(
+                        f"  ├─ {container.name}",
+                        container.container_name,
+                        status_text,
+                        health_text,
+                        ports_text,
+                        (
+                            container.description[:50] + "..."
+                            if len(container.description) > 50
+                            else container.description
+                        ),
+                        key=f"{service.id}-{container.container_name}",
+                    )
+            else:
+                # Single container service
+                status = self.container_statuses.get(service.container_name)
+
+                # Format status
+                status_text = "Unknown"
+                if status:
+                    if status.status == "running":
+                        status_text = "Running"
+                    elif status.status == "exited" or status.status == "stopped":
+                        status_text = "Stopped"
+                    elif status.status == "not_found":
+                        status_text = "Not Created"
+                    else:
+                        status_text = f"{status.status.title()}"
+
+                # Format health
+                health_text = "N/A"
+                if status and status.health:
+                    if status.health == "healthy":
+                        health_text = "Healthy"
+                    elif status.health == "unhealthy":
+                        health_text = "Unhealthy"
+                    elif status.health == "starting":
+                        health_text = "Starting"
+
+                # Format ports
+                ports_text = ""
+                if service.ports:
+                    ports_list = [f"{p.host}:{p.container}" for p in service.ports]
+                    ports_text = ", ".join(ports_list)
+
+                # Add row
+                table.add_row(
+                    service.name,
+                    service.container_name,
+                    status_text,
+                    health_text,
+                    ports_text,
+                    (
+                        service.description[:50] + "..."
+                        if len(service.description) > 50
+                        else service.description
+                    ),
+                    key=service.id,
+                )
 
         # Select first row if available
         if self.services:
@@ -154,8 +219,6 @@ class ServiceListScreen(Screen):
         if not self._selected_service:
             return
 
-        status = self.container_statuses.get(self._selected_service.container_name)
-
         try:
             info_widget = self.query_one("#status-info", Static)
         except Exception:
@@ -163,29 +226,54 @@ class ServiceListScreen(Screen):
 
         info_lines = [
             f"Selected: {self._selected_service.name}",
-            f"Container: {self._selected_service.container_name}",
         ]
 
-        if status:
-            info_lines.extend(
-                [
-                    f"Status: {status.status}",
-                    f"Image: {status.image or 'N/A'}",
-                ]
+        # Handle grouped services
+        if self._selected_service.containers:
+            info_lines.append(
+                f"Type: Grouped Service ({len(self._selected_service.containers)} containers)"
             )
 
-            if status.created_at:
-                info_lines.append(
-                    f"Created: {status.created_at.strftime('%Y-%m-%d %H:%M:%S')}"
+            # List all containers with their status
+            for container in self._selected_service.containers:
+                status = self.container_statuses.get(container.container_name)
+                status_text = "Unknown"
+                if status:
+                    if status.status == "running":
+                        status_text = "Running"
+                    elif status.status == "exited" or status.status == "stopped":
+                        status_text = "Stopped"
+                    elif status.status == "not_found":
+                        status_text = "Not Created"
+                    else:
+                        status_text = status.status.title()
+
+                info_lines.append(f"  - {container.name}: {status_text}")
+        else:
+            # Single container service
+            info_lines.append(f"Container: {self._selected_service.container_name}")
+            status = self.container_statuses.get(self._selected_service.container_name)
+
+            if status:
+                info_lines.extend(
+                    [
+                        f"Status: {status.status}",
+                        f"Image: {status.image or 'N/A'}",
+                    ]
                 )
 
-            if status.started_at:
-                info_lines.append(
-                    f"Started: {status.started_at.strftime('%Y-%m-%d %H:%M:%S')}"
-                )
+                if status.created_at:
+                    info_lines.append(
+                        f"Created: {status.created_at.strftime('%Y-%m-%d %H:%M:%S')}"
+                    )
 
-            if status.error_message:
-                info_lines.append(f"Error: {status.error_message}")
+                if status.started_at:
+                    info_lines.append(
+                        f"Started: {status.started_at.strftime('%Y-%m-%d %H:%M:%S')}"
+                    )
+
+                if status.error_message:
+                    info_lines.append(f"Error: {status.error_message}")
 
         # Available commands
         make_commands = []
@@ -244,17 +332,35 @@ class ServiceListScreen(Screen):
             self.notify("No service selected", severity="warning")
             return
 
-        status = self.container_statuses.get(service.container_name)
-
         # Determine action based on current status
-        if status and status.status == "running":
+        # For grouped services, check if any container is running
+        is_running = False
+        if service.containers:
+            # Check if any child container is running
+            for container in service.containers:
+                status = self.container_statuses.get(container.container_name)
+                if status and status.status == "running":
+                    is_running = True
+                    break
+        else:
+            # Single container service
+            status = self.container_statuses.get(service.container_name)
+            is_running = status and status.status == "running" if status else False
+
+        if is_running:
             # Stop service
             command = service.make_commands.get("stop")
-            description = f"Stopping {service.name}"
+            if service.containers:
+                description = f"Stopping {service.name} (all containers)"
+            else:
+                description = f"Stopping {service.name}"
         else:
             # Start service
             command = service.make_commands.get("start")
-            description = f"Starting {service.name}"
+            if service.containers:
+                description = f"Starting {service.name} (all containers)"
+            else:
+                description = f"Starting {service.name}"
 
         if not command:
             self.notify(f"No command available for {service.name}", severity="error")
@@ -279,6 +385,14 @@ class ServiceListScreen(Screen):
             self.notify("No service selected", severity="warning")
             return
 
+        # For grouped services, we cannot show combined logs easily
+        if service.containers:
+            self.notify(
+                f"{service.name} is a grouped service. Use 'make logs-opensearch' or 'make logs-dashboards' from terminal.",
+                severity="warning",
+            )
+            return
+
         # Import here to avoid circular imports
         from .log_viewer import LogViewerScreen
 
@@ -289,6 +403,14 @@ class ServiceListScreen(Screen):
         service = self._get_selected_service()
         if not service:
             self.notify("No service selected", severity="warning")
+            return
+
+        # For grouped services, we show summary info already
+        if service.containers:
+            self.notify(
+                f"{service.name} is a grouped service. See status info below for all containers.",
+                severity="info",
+            )
             return
 
         # Import here to avoid circular imports

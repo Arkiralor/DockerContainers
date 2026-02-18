@@ -93,7 +93,8 @@ async function getContainerStatus(containerName: string) {
  *
  * Returns an array of service objects containing configuration details from
  * the SERVICES config along with real-time status from Docker (whether container
- * exists, is running, current state, etc.).
+ * exists, is running, current state, etc.). For grouped services, returns status
+ * for all containers within the group.
  *
  * @returns 200 with array of service objects
  * @returns 500 if unable to retrieve service information
@@ -103,14 +104,62 @@ router.get('/', async (req, res) => {
     const services = Object.values(SERVICES)
     const statuses = await Promise.all(
       services.map(async (service) => {
-        const status = await getContainerStatus(service.containerName)
-        return {
-          id: service.id,
-          name: service.name,
-          description: service.description,
-          containerName: service.containerName,
-          ports: service.ports,
-          ...status
+        // Check if this is a grouped service
+        if ('containers' in service && service.containers) {
+          // Get status for all containers in the group
+          const containerStatuses = await Promise.all(
+            service.containers.map(async (container) => {
+              const status = await getContainerStatus(container.containerName)
+              return {
+                name: container.name,
+                containerName: container.containerName,
+                description: container.description,
+                ports: container.ports,
+                ...status
+              }
+            })
+          )
+
+          // Service is "running" if any container is running
+          const anyRunning = containerStatuses.some(c => c.running)
+          const allExist = containerStatuses.every(c => c.exists)
+
+          return {
+            id: service.id,
+            name: service.name,
+            description: service.description,
+            isGrouped: true,
+            containers: containerStatuses,
+            running: anyRunning,
+            exists: allExist
+          }
+        } else {
+          // Single container service
+          const containerName = 'containerName' in service ? service.containerName : undefined
+          const ports = 'ports' in service ? service.ports : undefined
+
+          if (!containerName) {
+            logger.error(`Service ${service.id} has invalid configuration - missing container name`)
+            return {
+              id: service.id,
+              name: service.name,
+              description: service.description,
+              isGrouped: false,
+              exists: false,
+              running: false
+            }
+          }
+
+          const status = await getContainerStatus(containerName)
+          return {
+            id: service.id,
+            name: service.name,
+            description: service.description,
+            containerName,
+            ports: ports || [],
+            isGrouped: false,
+            ...status
+          }
         }
       })
     )
@@ -127,7 +176,8 @@ router.get('/', async (req, res) => {
  * Retrieves detailed information about a specific service.
  *
  * Returns service configuration details from SERVICES config merged with
- * real-time Docker container status.
+ * real-time Docker container status. For grouped services, includes status
+ * for all containers within the group.
  *
  * @param serviceId - Service identifier (e.g., "redis", "postgres", "opensearch")
  * @returns 200 with service object
@@ -143,15 +193,55 @@ router.get('/:serviceId', async (req, res) => {
       return res.status(404).json({ error: 'Service not found' })
     }
 
-    const status = await getContainerStatus(service.containerName)
-    res.json({
-      id: service.id,
-      name: service.name,
-      description: service.description,
-      containerName: service.containerName,
-      ports: service.ports,
-      ...status
-    })
+    // Check if this is a grouped service
+    if ('containers' in service && service.containers) {
+      // Get status for all containers in the group
+      const containerStatuses = await Promise.all(
+        service.containers.map(async (container) => {
+          const status = await getContainerStatus(container.containerName)
+          return {
+            name: container.name,
+            containerName: container.containerName,
+            description: container.description,
+            ports: container.ports,
+            ...status
+          }
+        })
+      )
+
+      // Service is "running" if any container is running
+      const anyRunning = containerStatuses.some(c => c.running)
+      const allExist = containerStatuses.every(c => c.exists)
+
+      res.json({
+        id: service.id,
+        name: service.name,
+        description: service.description,
+        isGrouped: true,
+        containers: containerStatuses,
+        running: anyRunning,
+        exists: allExist
+      })
+    } else {
+      // Single container service
+      const containerName = 'containerName' in service ? service.containerName : undefined
+      const ports = 'ports' in service ? service.ports : undefined
+
+      if (!containerName) {
+        return res.status(500).json({ error: 'Invalid service configuration - missing container name' })
+      }
+
+      const status = await getContainerStatus(containerName)
+      res.json({
+        id: service.id,
+        name: service.name,
+        description: service.description,
+        containerName,
+        ports: ports || [],
+        isGrouped: false,
+        ...status
+      })
+    }
   } catch (error) {
     logger.error(`Error getting service ${req.params.serviceId}:`, error)
     res.status(500).json({ error: 'Failed to get service' })
@@ -164,12 +254,11 @@ router.get('/:serviceId', async (req, res) => {
  * Starts a service using its configured make command.
  *
  * Executes the service's start make command (e.g., "make start-redis") to bring up
- * the service containers. The dashboards service cannot be started directly as it
- * is managed by the opensearch compose file.
+ * the service containers. For grouped services, starts all containers in the group.
  *
  * @param serviceId - Service identifier (e.g., "redis", "postgres", "opensearch")
  * @returns 200 with execution result (success, output, error)
- * @returns 400 if service cannot be started directly or has no start command
+ * @returns 400 if service has no start command
  * @returns 404 if service not found in configuration
  * @returns 500 if unable to start service
  */
@@ -180,13 +269,6 @@ router.post('/:serviceId/start', async (req, res) => {
 
     if (!service) {
       return res.status(404).json({ error: 'Service not found' })
-    }
-
-    // Dashboards is controlled by OpenSearch compose file
-    if (serviceId === 'dashboards') {
-      return res.status(400).json({
-        error: 'OpenSearch Dashboards starts automatically with OpenSearch. Please start OpenSearch instead.'
-      })
     }
 
     const makeCommands = service.makeCommands as { start?: string; stop?: string; logs?: string } | undefined
@@ -209,12 +291,11 @@ router.post('/:serviceId/start', async (req, res) => {
  * Stops a service using its configured make command.
  *
  * Executes the service's stop make command (e.g., "make stop-redis") to gracefully
- * shut down the service containers. The dashboards service cannot be stopped directly
- * as it is managed by the opensearch compose file.
+ * shut down the service containers. For grouped services, stops all containers in the group.
  *
  * @param serviceId - Service identifier (e.g., "redis", "postgres", "opensearch")
  * @returns 200 with execution result (success, output, error)
- * @returns 400 if service cannot be stopped directly or has no stop command
+ * @returns 400 if service has no stop command
  * @returns 404 if service not found in configuration
  * @returns 500 if unable to stop service
  */
@@ -225,13 +306,6 @@ router.post('/:serviceId/stop', async (req, res) => {
 
     if (!service) {
       return res.status(404).json({ error: 'Service not found' })
-    }
-
-    // Dashboards is controlled by OpenSearch compose file
-    if (serviceId === 'dashboards') {
-      return res.status(400).json({
-        error: 'OpenSearch Dashboards stops automatically with OpenSearch. Please stop OpenSearch instead.'
-      })
     }
 
     const makeCommands = service.makeCommands as { start?: string; stop?: string; logs?: string } | undefined
@@ -255,11 +329,13 @@ router.post('/:serviceId/stop', async (req, res) => {
  *
  * Fetches the most recent logs from the service's container. The number of log lines
  * can be controlled via the 'tail' query parameter (default: 100 lines).
+ * For grouped services, logs are not supported via this endpoint.
  *
  * @param serviceId - Service identifier (e.g., "redis", "postgres", "opensearch")
  * @param tail - Query parameter: number of lines to retrieve (default: 100)
  * @returns 200 with logs object containing log content
  * @returns 200 with "Container does not exist" message if container not found
+ * @returns 400 if service is a grouped service
  * @returns 404 if service not found in configuration
  * @returns 500 if unable to retrieve logs
  */
@@ -273,7 +349,20 @@ router.get('/:serviceId/logs', async (req, res) => {
       return res.status(404).json({ error: 'Service not found' })
     }
 
-    const status = await getContainerStatus(service.containerName)
+    // Check if this is a grouped service
+    if ('containers' in service && service.containers) {
+      return res.status(400).json({
+        error: 'Cannot retrieve logs for grouped services. Use container-specific log commands instead.'
+      })
+    }
+
+    const containerName = 'containerName' in service ? service.containerName : undefined
+
+    if (!containerName) {
+      return res.status(500).json({ error: 'Invalid service configuration - missing container name' })
+    }
+
+    const status = await getContainerStatus(containerName)
 
     if (!status.exists) {
       return res.json({ logs: 'Container does not exist' })

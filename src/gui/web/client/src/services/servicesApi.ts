@@ -1,18 +1,37 @@
 /**
- * Service status information interface.
- *
- * Combines service configuration with real-time Docker container status.
+ * Container status within a grouped service
  */
-export interface ServiceStatus {
-  id: string
+export interface ContainerStatus {
   name: string
-  description: string
   containerName: string
+  description: string
   ports: number[]
   exists: boolean
   running: boolean
   status?: string
   state?: string
+}
+
+/**
+ * Service status information interface.
+ *
+ * Combines service configuration with real-time Docker container status.
+ * Services can be either single-container or grouped services with multiple containers.
+ */
+export interface ServiceStatus {
+  id: string
+  name: string
+  description: string
+  exists: boolean
+  running: boolean
+  isGrouped?: boolean
+  // For single-container services
+  containerName?: string
+  ports?: number[]
+  status?: string
+  state?: string
+  // For grouped services
+  containers?: ContainerStatus[]
 }
 
 /**
