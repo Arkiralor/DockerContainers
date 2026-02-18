@@ -24,6 +24,9 @@ interface ServiceCardProps {
  * Shows service name, description, container name, exposed ports, and current status.
  * Provides buttons to start/stop the service and view details.
  *
+ * For grouped services (like OpenSearch Stack), displays a hierarchical view
+ * of all containers within the group.
+ *
  * Visual states:
  * - Running: Green indicator, shows Stop button
  * - Stopped: Yellow indicator, shows Start button
@@ -58,17 +61,58 @@ export default function ServiceCard({
       </div>
 
       <div className="space-y-2 mb-4">
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-gray-500">Container:</span>
-          <span className="text-gray-300 font-mono">{service.containerName}</span>
-        </div>
-        {service.ports && service.ports.length > 0 && (
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-gray-500">Ports:</span>
-            <span className="text-gray-300 font-mono">
-              {service.ports.join(', ')}
-            </span>
-          </div>
+        {service.isGrouped && service.containers ? (
+          /* Grouped service - show all containers */
+          <>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-gray-500">Type:</span>
+              <span className="text-gray-300">Service Group ({service.containers.length} containers)</span>
+            </div>
+            <div className="ml-4 space-y-2 border-l-2 border-gray-700 pl-4">
+              {service.containers.map((container) => {
+                const containerStatusColor = container.running ? 'bg-green-500' : container.exists ? 'bg-yellow-500' : 'bg-gray-500'
+                const containerStatusText = container.running ? 'Running' : container.exists ? 'Stopped' : 'Not Created'
+
+                return (
+                  <div key={container.containerName} className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-1.5 h-1.5 rounded-full ${containerStatusColor}`} />
+                      <span className="text-gray-300 font-medium text-sm">{container.name}</span>
+                      <span className="text-gray-500 text-xs">({containerStatusText})</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs ml-3.5">
+                      <span className="text-gray-500">Container:</span>
+                      <span className="text-gray-400 font-mono">{container.containerName}</span>
+                    </div>
+                    {container.ports && container.ports.length > 0 && (
+                      <div className="flex items-center gap-2 text-xs ml-3.5">
+                        <span className="text-gray-500">Ports:</span>
+                        <span className="text-gray-400 font-mono">
+                          {container.ports.join(', ')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </>
+        ) : (
+          /* Single container service */
+          <>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-gray-500">Container:</span>
+              <span className="text-gray-300 font-mono">{service.containerName}</span>
+            </div>
+            {service.ports && service.ports.length > 0 && (
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-gray-500">Ports:</span>
+                <span className="text-gray-300 font-mono">
+                  {service.ports.join(', ')}
+                </span>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -80,7 +124,7 @@ export default function ServiceCard({
             className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded transition-colors flex items-center justify-center gap-2"
           >
             <Play size={16} />
-            Start
+            Start{service.isGrouped ? ' All' : ''}
           </button>
         )}
         {service.running && (
@@ -90,18 +134,23 @@ export default function ServiceCard({
             className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded transition-colors flex items-center justify-center gap-2"
           >
             <Square size={16} />
-            Stop
+            Stop{service.isGrouped ? ' All' : ''}
           </button>
         )}
         <button
           onClick={() => onViewDetails(service.id)}
-          disabled={!service.exists}
+          disabled={!service.exists || service.isGrouped}
           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded transition-colors flex items-center gap-2"
         >
           <Info size={16} />
           Details
         </button>
       </div>
+      {service.isGrouped && (
+        <p className="text-xs text-gray-500 mt-2 text-center">
+          This is a grouped service. All containers are managed together.
+        </p>
+      )}
     </div>
   )
 }
