@@ -104,7 +104,6 @@ class ServiceListScreen(Screen):
 
             # Format status
             status_text = "Unknown"
-            status_color = "white"
             if status:
                 if status.status == "running":
                     status_text = "Running"
@@ -138,9 +137,11 @@ class ServiceListScreen(Screen):
                 status_text,
                 health_text,
                 ports_text,
-                service.description[:50] + "..."
-                if len(service.description) > 50
-                else service.description,
+                (
+                    service.description[:50] + "..."
+                    if len(service.description) > 50
+                    else service.description
+                ),
                 key=service.id,
             )
 

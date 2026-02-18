@@ -21,10 +21,43 @@ Thank you for your interest in contributing to this Docker containers repository
 
 ### 3. Testing
 
+All code changes must include appropriate tests:
+
+**For Docker Compose Services:**
 - Test your Docker compositions locally
 - Ensure all services start properly
 - Verify connectivity between services if applicable
 - Run any existing tests in the `test/` directory
+
+**For Web GUIs (Client/Server):**
+- Write unit tests for new components and functions
+- Write integration tests for user workflows
+- Maintain 80%+ code coverage
+- All tests must pass before submitting PR
+- Follow existing test patterns in the codebase
+
+**Running Web GUI Tests:**
+```bash
+# Client tests
+cd src/gui/web/client
+npm test                 # Watch mode
+npm run test:coverage    # With coverage
+
+# Server tests
+cd src/gui/web/server
+npm test                 # Watch mode
+npm run test:coverage    # With coverage
+```
+
+**Test Requirements:**
+- Unit tests for all new functions/components
+- Integration tests for user-facing features
+- Mock external dependencies (Docker, APIs)
+- Test both success and error paths
+- Follow React Testing Library best practices (client)
+- Use Supertest for API testing (server)
+
+See [Testing Guide](docs/testing.md) for detailed information.
 
 ### 4. Documentation
 

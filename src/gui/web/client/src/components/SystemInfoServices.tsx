@@ -3,6 +3,24 @@ import { formatBytes } from '@shared/utils'
 import { useSystemInfo } from '@/hooks/useApi'
 import { Server, HardDrive, Cpu, Activity } from 'lucide-react'
 
+/**
+ * SystemInfoServices Component
+ *
+ * Displays a summary dashboard showing system and service statistics.
+ * Shows key metrics in a grid layout:
+ * - Total number of configured services
+ * - Number of running services
+ * - Number of stopped services
+ * - Total system memory
+ * - Number of CPUs
+ *
+ * Data is fetched from both the services API (for service counts) and
+ * Docker system info API (for hardware details). Auto-refreshes to stay current.
+ *
+ * Returns null during loading to prevent layout shift.
+ *
+ * @returns JSX element displaying system statistics grid, or null if loading
+ */
 export default function SystemInfoServices() {
   const { data: systemInfo, isLoading: systemLoading } = useSystemInfo()
   const { data: services, isLoading: servicesLoading } = useServices()

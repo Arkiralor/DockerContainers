@@ -205,7 +205,7 @@ class DockerClient:
             }
 
             if since:
-                logs_kwargs["since"] = since
+                logs_kwargs["since"] = int(since.timestamp())
 
             logs = container.logs(**logs_kwargs)
 
@@ -236,7 +236,6 @@ class DockerClient:
             return None
 
         try:
-            info = self._client.info()
             version_info = self._client.version()
 
             # Count containers by status

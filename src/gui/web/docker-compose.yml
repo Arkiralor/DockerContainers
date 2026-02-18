@@ -1,4 +1,9 @@
 ## DEPRECATED: This file is no longer used. The project has been restructured to use separate Dockerfiles for the server and client, and the application is now run on bare metal instead of using Docker Compose. Please refer to the README.md for updated instructions on how to run the application.
+##
+## For testing the web GUI:
+## - Client tests: cd client && npm test (see client/tests/README.md)
+## - Server tests: cd server && npm test (see server/tests/README.md)
+## - Full testing guide: See docs/testing.md
 
 services:
   docker-gui-server:

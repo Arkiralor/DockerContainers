@@ -1,14 +1,37 @@
 import { Play, Square, Info } from 'lucide-react'
 import type { ServiceStatus } from '@/services/servicesApi'
 
+/**
+ * Props for ServiceCard component
+ */
 interface ServiceCardProps {
+  /** Service status information including configuration and runtime state */
   service: ServiceStatus
+  /** Callback fired when start button is clicked */
   onStart: (id: string) => void
+  /** Callback fired when stop button is clicked */
   onStop: (id: string) => void
+  /** Callback fired when details button is clicked */
   onViewDetails: (id: string) => void
+  /** Whether a service operation is in progress (disables buttons) */
   isLoading: boolean
 }
 
+/**
+ * ServiceCard Component
+ *
+ * Displays a card showing service information and controls.
+ * Shows service name, description, container name, exposed ports, and current status.
+ * Provides buttons to start/stop the service and view details.
+ *
+ * Visual states:
+ * - Running: Green indicator, shows Stop button
+ * - Stopped: Yellow indicator, shows Start button
+ * - Not Created: Gray indicator, shows disabled Start button
+ *
+ * @param props - Component props
+ * @returns JSX element displaying a service card
+ */
 export default function ServiceCard({
   service,
   onStart,

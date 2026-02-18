@@ -262,6 +262,7 @@ class OperationsScreen(Screen):
         self, command: str, operation_key: str
     ) -> CommandResult:
         """Execute a Make command."""
+        assert self.command_executor is not None, "CommandExecutor should not be None"
         description = f"Executing make {command}"
         self.notify(description)
 
@@ -277,6 +278,7 @@ class OperationsScreen(Screen):
         self, script_path: str, operation_key: str
     ) -> CommandResult:
         """Execute a shell script."""
+        assert self.command_executor is not None, "CommandExecutor should not be None"
         description = f"Executing {script_path}"
         self.notify(description)
 

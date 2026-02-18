@@ -230,3 +230,184 @@ export interface ServiceDefinition {
   directory: string
   containers: string[]
 }
+
+export interface PortBinding {
+  HostIp: string
+  HostPort: string
+}
+
+export interface ContainerDetails {
+  Id: string
+  Created: string
+  Path: string
+  Args: string[]
+  State: {
+    Status: string
+    Running: boolean
+    Paused: boolean
+    Restarting: boolean
+    OOMKilled: boolean
+    Dead: boolean
+    Pid: number
+    ExitCode: number
+    Error: string
+    StartedAt: string
+    FinishedAt: string
+  }
+  Image: string
+  ResolvConfPath: string
+  HostnamePath: string
+  HostsPath: string
+  LogPath: string
+  Name: string
+  RestartCount: number
+  Driver: string
+  Platform: string
+  MountLabel: string
+  ProcessLabel: string
+  AppArmorProfile: string
+  ExecIDs: string[] | null
+  HostConfig: {
+    Binds: string[] | null
+    ContainerIDFile: string
+    LogConfig: {
+      Type: string
+      Config: Record<string, string>
+    }
+    NetworkMode: string
+    PortBindings: Record<string, PortBinding[] | null>
+    RestartPolicy: {
+      Name: string
+      MaximumRetryCount: number
+    }
+    AutoRemove: boolean
+    VolumeDriver: string
+    VolumesFrom: string[] | null
+    CapAdd: string[] | null
+    CapDrop: string[] | null
+    CgroupnsMode: string
+    Dns: string[]
+    DnsOptions: string[]
+    DnsSearch: string[]
+    ExtraHosts: string[] | null
+    GroupAdd: string[] | null
+    IpcMode: string
+    Cgroup: string
+    Links: string[] | null
+    OomScoreAdj: number
+    PidMode: string
+    Privileged: boolean
+    PublishAllPorts: boolean
+    ReadonlyRootfs: boolean
+    SecurityOpt: string[] | null
+    UTSMode: string
+    UsernsMode: string
+    ShmSize: number
+    Runtime: string
+    ConsoleSize: [number, number]
+    Isolation: string
+    CpuShares: number
+    Memory: number
+    NanoCpus: number
+    CgroupParent: string
+    BlkioWeight: number
+    BlkioWeightDevice: unknown[]
+    BlkioDeviceReadBps: unknown[]
+    BlkioDeviceWriteBps: unknown[]
+    BlkioDeviceReadIOps: unknown[]
+    BlkioDeviceWriteIOps: unknown[]
+    CpuPeriod: number
+    CpuQuota: number
+    CpuRealtimePeriod: number
+    CpuRealtimeRuntime: number
+    CpusetCpus: string
+    CpusetMems: string
+    Devices: unknown[]
+    DeviceCgroupRules: string[] | null
+    DeviceRequests: unknown[] | null
+    KernelMemory: number
+    KernelMemoryTCP: number
+    MemoryReservation: number
+    MemorySwap: number
+    MemorySwappiness: number | null
+    OomKillDisable: boolean
+    PidsLimit: number | null
+    Ulimits: unknown[] | null
+    CpuCount: number
+    CpuPercent: number
+    IOMaximumIOps: number
+    IOMaximumBandwidth: number
+    MaskedPaths: string[]
+    ReadonlyPaths: string[]
+  }
+  GraphDriver: {
+    Data: {
+      LowerDir: string
+      MergedDir: string
+      UpperDir: string
+      WorkDir: string
+    }
+    Name: string
+  }
+  Mounts: Mount[]
+  Config: {
+    Hostname: string
+    Domainname: string
+    User: string
+    AttachStdin: boolean
+    AttachStdout: boolean
+    AttachStderr: boolean
+    ExposedPorts: Record<string, Record<string, never>> | null
+    Tty: boolean
+    OpenStdin: boolean
+    StdinOnce: boolean
+    Env: string[]
+    Cmd: string[] | null
+    Image: string
+    Volumes: Record<string, Record<string, never>> | null
+    WorkingDir: string
+    Entrypoint: string[] | null
+    OnBuild: string[] | null
+    Labels: Record<string, string>
+  }
+  NetworkSettings: {
+    Bridge: string
+    SandboxID: string
+    HairpinMode: boolean
+    LinkLocalIPv6Address: string
+    LinkLocalIPv6PrefixLen: number
+    Ports: Record<string, PortBinding[] | null>
+    SandboxKey: string
+    SecondaryIPAddresses: unknown[] | null
+    SecondaryIPv6Addresses: unknown[] | null
+    EndpointID: string
+    Gateway: string
+    GlobalIPv6Address: string
+    GlobalIPv6PrefixLen: number
+    IPAddress: string
+    IPPrefixLen: number
+    IPv6Gateway: string
+    MacAddress: string
+    Networks: Record<string, NetworkInfo>
+  }
+}
+
+export interface DockerVersion {
+  Platform: {
+    Name: string
+  }
+  Components: Array<{
+    Name: string
+    Version: string
+    Details?: Record<string, string>
+  }>
+  Version: string
+  ApiVersion: string
+  MinAPIVersion: string
+  GitCommit: string
+  GoVersion: string
+  Os: string
+  Arch: string
+  KernelVersion: string
+  BuildTime: string
+}

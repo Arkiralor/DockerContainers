@@ -301,7 +301,7 @@ class LogViewerScreen(Screen):
 
                 # Check if still following (might have changed during sleep)
                 if not self.following:
-                    break
+                    break  # type: ignore[unreachable]
 
                 if not self.docker_client.is_connected():
                     continue
@@ -314,7 +314,11 @@ class LogViewerScreen(Screen):
                 )
 
                 # Only process if we got valid logs (not error messages)
-                if new_logs and len(new_logs) > 0 and not new_logs[0].startswith("ERROR:"):
+                if (
+                    new_logs
+                    and len(new_logs) > 0
+                    and not new_logs[0].startswith("ERROR:")
+                ):
                     # Update timestamp only after successful retrieval
                     self._last_log_check = datetime.now()
 

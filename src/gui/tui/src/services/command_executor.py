@@ -25,15 +25,18 @@ class CommandResult:
 class CommandExecutor:
     """Executes Make commands and scripts in the repository root directory."""
 
+    repository_root: str
+
     def __init__(self, repository_root: str | None = None):
         """Initialize command executor.
 
         Args:
             repository_root: Path to repository root. If None, attempts to find it.
         """
-        self.repository_root = self._find_repository_root(repository_root)
-        if not self.repository_root:
+        root = self._find_repository_root(repository_root)
+        if not root:
             raise RuntimeError("Could not find repository root directory")
+        self.repository_root = root
 
         # Verify make is available
         if not self._check_make_available():
@@ -62,7 +65,9 @@ class CommandExecutor:
             if makefile_path.exists():
                 # Validate this is the repository root by checking for expected directories
                 # Repository root should have both src/ and scripts/ directories
-                if (current_dir / "src").exists() and (current_dir / "scripts").exists():
+                if (current_dir / "src").exists() and (
+                    current_dir / "scripts"
+                ).exists():
                     return str(current_dir)
 
             # Move to parent directory
@@ -83,10 +88,9 @@ class CommandExecutor:
                 potential_root = (script_dir / rel_path).resolve()
                 if (potential_root / "Makefile").exists():
                     # Validate this is the repository root
-                    if (
-                        (potential_root / "src").exists()
-                        and (potential_root / "scripts").exists()
-                    ):
+                    if (potential_root / "src").exists() and (
+                        potential_root / "scripts"
+                    ).exists():
                         return str(potential_root)
 
         return None
@@ -98,7 +102,7 @@ class CommandExecutor:
                 ["make", "--version"], capture_output=True, text=True, timeout=5
             )
             return result.returncode == 0
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+        except subprocess.TimeoutExpired, FileNotFoundError:
             return False
 
     def execute_make_command(
@@ -224,7 +228,7 @@ class CommandExecutor:
                 cwd=self.repository_root,
             )
             return result.returncode == 0
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+        except subprocess.TimeoutExpired, FileNotFoundError:
             return False
 
     def check_docker_compose_available(self) -> bool:
@@ -238,5 +242,5 @@ class CommandExecutor:
                 cwd=self.repository_root,
             )
             return result.returncode == 0
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+        except subprocess.TimeoutExpired, FileNotFoundError:
             return False

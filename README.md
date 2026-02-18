@@ -511,6 +511,43 @@ Total:  30
 Passed: 30
 Failed: 0
 
+### Web GUI Testing
+
+The web-based and terminal-based management interfaces have comprehensive test suites:
+
+**Client Testing** (React Frontend):
+```bash
+cd src/gui/web/client
+npm test                  # Watch mode
+npm run test:run          # Single run
+npm run test:coverage     # With coverage report
+```
+
+**Server Testing** (Express API):
+```bash
+cd src/gui/web/server
+npm test                  # Watch mode
+npm run test:run          # Single run
+npm run test:coverage     # With coverage report
+```
+
+**TUI Testing** (Python Terminal UI):
+```bash
+cd src/gui/tui
+source env/bin/activate
+pytest                    # All tests
+pytest --cov=src          # With coverage
+pytest -m unit            # Unit tests only
+```
+
+**Testing Standards**:
+- **Coverage Target**: 80%+ for all components
+- **Test Frameworks**: Vitest (client/server), pytest (TUI)
+- **Test Types**: Unit, integration, and end-to-end tests
+- **Mocking**: All external dependencies (Docker, APIs, WebSocket)
+
+**Comprehensive Testing Guide**: See [docs/testing.md](docs/testing.md) for detailed patterns, best practices, and troubleshooting.
+
 All tests passed!
 ```
 

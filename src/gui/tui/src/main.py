@@ -80,6 +80,7 @@ def main(
         sys.exit(1)
 
     # Find repository root
+    repo_path: Path | None
     if repository_root:
         repo_path = repository_root
     else:
@@ -196,6 +197,7 @@ def check(repository_root: Path | None) -> None:
             click.echo(f"      - {error}")
 
     # Find repository root
+    repo_path: Path | None
     if repository_root:
         repo_path = repository_root
     else:

@@ -1,16 +1,44 @@
 import { ReactNode } from 'react'
 
+/**
+ * Props for ConfirmDialog component
+ */
 interface ConfirmDialogProps {
+  /** Whether the dialog is visible */
   isOpen: boolean
+  /** Dialog title */
   title: string
+  /** Confirmation message/question */
   message: string
+  /** Label for confirm button (default: "Confirm") */
   confirmLabel?: string
+  /** Label for cancel button (default: "Cancel") */
   cancelLabel?: string
+  /** Callback fired when confirm button is clicked */
   onConfirm: () => void
+  /** Callback fired when cancel button is clicked or dialog is dismissed */
   onCancel: () => void
+  /** Visual variant affecting confirm button color (default: "warning") */
   variant?: 'danger' | 'warning' | 'info'
 }
 
+/**
+ * ConfirmDialog Component
+ *
+ * Modal dialog for confirming destructive or important actions.
+ * Displays a title, message, and two buttons (confirm and cancel).
+ *
+ * Variants:
+ * - danger: Red confirm button (for destructive actions like delete)
+ * - warning: Yellow confirm button (for potentially harmful actions like stop)
+ * - info: Blue confirm button (for informational confirmations)
+ *
+ * The dialog is displayed centered on screen with a dark overlay.
+ * Returns null when isOpen is false.
+ *
+ * @param props - Component props
+ * @returns JSX element displaying confirmation dialog, or null if not open
+ */
 export default function ConfirmDialog({
   isOpen,
   title,
@@ -55,14 +83,45 @@ export default function ConfirmDialog({
   )
 }
 
+/**
+ * Props for Modal component
+ */
 interface ModalProps {
+  /** Whether the modal is visible */
   isOpen: boolean
+  /** Callback fired when modal should close (via close button or overlay click) */
   onClose: () => void
+  /** Modal title displayed in header */
   title: string
+  /** Modal content to display in body */
   children: ReactNode
+  /** Modal width size (default: "lg") */
   size?: 'sm' | 'md' | 'lg' | 'xl'
 }
 
+/**
+ * Modal Component
+ *
+ * Generic modal dialog for displaying detailed content.
+ * Provides a sticky header with title and close button, plus scrollable content area.
+ *
+ * Size options:
+ * - sm: max-w-md (small, for simple content)
+ * - md: max-w-2xl (medium)
+ * - lg: max-w-4xl (large, default)
+ * - xl: max-w-6xl (extra large, for detailed views)
+ *
+ * Features:
+ * - Centered on screen with dark overlay
+ * - Sticky header that remains visible while scrolling
+ * - Constrained to 90% of viewport height with internal scrolling
+ * - Close button in header
+ *
+ * Returns null when isOpen is false.
+ *
+ * @param props - Component props
+ * @returns JSX element displaying modal, or null if not open
+ */
 export function Modal({ isOpen, onClose, title, children, size = 'lg' }: ModalProps) {
   if (!isOpen) return null
 

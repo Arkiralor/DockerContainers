@@ -50,9 +50,9 @@ def check_prerequisites() -> tuple[bool, list[str]]:
     errors = []
 
     # Check Python version
-    if sys.version_info < (3, 10):
+    if sys.version_info < (3, 14):  # noqa: UP036
         errors.append(
-            f"Python 3.10+ required, found {sys.version_info.major}.{sys.version_info.minor}"
+            f"Python 3.14+ required, found {sys.version_info.major}.{sys.version_info.minor}"
         )
 
     # Check if repository root can be found
@@ -163,7 +163,7 @@ def get_terminal_size() -> tuple[int, int]:
     """
     try:
         size = os.get_terminal_size()
-        return size.columns, size.rows
+        return size.columns, size.lines
     except OSError:
         # Fallback for environments where terminal size can't be determined
         return 80, 24

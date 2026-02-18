@@ -53,6 +53,7 @@ class DockerTUIApp(App):
         super().__init__()
 
         # Initialize service clients
+        self.command_executor: CommandExecutor | None
         try:
             self.command_executor = CommandExecutor()
         except RuntimeError as e:
@@ -214,7 +215,7 @@ class DockerTUIApp(App):
         """Show help screen."""
         self.push_screen(HelpScreen())
 
-    def action_quit(self) -> None:
+    async def action_quit(self) -> None:
         """Quit application."""
         self.exit()
 
