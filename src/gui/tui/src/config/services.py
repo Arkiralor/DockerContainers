@@ -17,16 +17,33 @@ class ServicePort:
 
 
 @dataclass
+class ServiceContainer:
+    """Represents a container within a service group."""
+
+    name: str
+    container_name: str
+    description: str
+    ports: list[ServicePort]
+    make_commands: dict[str, str] | None = None
+
+
+@dataclass
 class ServiceConfig:
-    """Configuration for a Docker service managed by this repository."""
+    """Configuration for a Docker service managed by this repository.
+
+    A service can be either:
+    - A single container service (container_name and ports defined)
+    - A grouped service with multiple containers (containers list defined)
+    """
 
     id: str
     name: str
     description: str
-    container_name: str
-    ports: list[ServicePort]
     make_commands: dict[str, str]
     compose_file_path: str
+    container_name: str | None = None
+    ports: list[ServicePort] | None = None
+    containers: list[ServiceContainer] | None = None
     depends_on: list[str] | None = None
 
 
@@ -62,36 +79,47 @@ SERVICES: dict[str, ServiceConfig] = {
     ),
     "opensearch": ServiceConfig(
         id="opensearch",
-        name="OpenSearch",
-        description="OpenSearch engine for search and analytics",
-        container_name="opensearch",
-        ports=[
-            ServicePort(container=9200, host=9200, description="OpenSearch API"),
-            ServicePort(
-                container=9600, host=9600, description="OpenSearch Performance Analyzer"
-            ),
-        ],
+        name="OpenSearch Stack",
+        description="OpenSearch engine and dashboards for search, analytics, and visualization",
         make_commands={
             "start": "start-opensearch",
             "stop": "stop-opensearch",
-            "logs": "logs-opensearch",
-            "shell": "shell-opensearch",
         },
         compose_file_path="src/opensearch/docker-compose.yml",
-    ),
-    "opensearch-dashboards": ServiceConfig(
-        id="opensearch-dashboards",
-        name="OpenSearch Dashboards",
-        description="Web interface for OpenSearch data visualization",
-        container_name="opensearch-dashboards",
-        ports=[ServicePort(container=5601, host=5601, description="Dashboards Web UI")],
-        make_commands={
-            "start": "start-opensearch",  # Note: Dashboards starts with OpenSearch
-            "stop": "stop-opensearch",  # Note: Dashboards stops with OpenSearch
-            "logs": "logs-dashboards",
-        },
-        compose_file_path="src/opensearch/docker-compose.yml",
-        depends_on=["opensearch"],
+        containers=[
+            ServiceContainer(
+                name="OpenSearch",
+                container_name="opensearch-node",
+                description="Search and analytics engine",
+                ports=[
+                    ServicePort(
+                        container=9200, host=9200, description="OpenSearch API"
+                    ),
+                    ServicePort(
+                        container=9600,
+                        host=9600,
+                        description="OpenSearch Performance Analyzer",
+                    ),
+                ],
+                make_commands={
+                    "logs": "logs-opensearch",
+                    "shell": "shell-opensearch",
+                },
+            ),
+            ServiceContainer(
+                name="OpenSearch Dashboards",
+                container_name="opensearch-dashboards",
+                description="Web interface for data visualization",
+                ports=[
+                    ServicePort(
+                        container=5601, host=5601, description="Dashboards Web UI"
+                    )
+                ],
+                make_commands={
+                    "logs": "logs-dashboards",
+                },
+            ),
+        ],
     ),
 }
 

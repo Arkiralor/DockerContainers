@@ -132,11 +132,11 @@ class TestGetAllServices:
         service_ids = [s.id for s in services]
 
         # Expected services based on the repository
+        # Note: opensearch-dashboards is now part of opensearch as a grouped service
         expected_services = [
             "postgresql",
             "redis",
             "opensearch",
-            "opensearch-dashboards",
         ]
 
         for expected in expected_services:
@@ -151,8 +151,16 @@ class TestGetAllServices:
             assert service.id is not None
             assert service.name is not None
             assert service.description is not None
-            assert service.container_name is not None
-            assert isinstance(service.ports, list)
+            # For grouped services, container_name and ports can be None
+            # but they must have containers list instead
+            if service.containers:
+                assert service.container_name is None
+                assert service.ports is None
+                assert isinstance(service.containers, list)
+                assert len(service.containers) > 0
+            else:
+                assert service.container_name is not None
+                assert isinstance(service.ports, list)
             assert isinstance(service.make_commands, dict)
             assert service.compose_file_path is not None
 
@@ -166,7 +174,17 @@ class TestGetAllServices:
     def test_get_all_services_unique_container_names(self):
         """Test that all container names are unique."""
         services = get_all_services()
-        container_names = [s.container_name for s in services]
+        container_names = []
+
+        for s in services:
+            if s.containers:
+                # For grouped services, check container names within containers
+                for container in s.containers:
+                    container_names.append(container.container_name)
+            else:
+                # For single services, use the service container_name
+                if s.container_name:
+                    container_names.append(s.container_name)
 
         assert len(container_names) == len(set(container_names)), (
             "Duplicate container names found"
@@ -199,25 +217,43 @@ class TestServiceConfigValidation:
         assert any(p.container == 6379 for p in redis.ports)
 
     def test_opensearch_service_config(self):
-        """Test OpenSearch service configuration."""
+        """Test OpenSearch service configuration (now a grouped service)."""
         services = get_all_services()
         opensearch = next((s for s in services if s.id == "opensearch"), None)
 
         assert opensearch is not None
-        assert opensearch.container_name == "opensearch"
-        assert len(opensearch.ports) >= 2  # Should have at least 9200 and 9600
-
-    def test_dashboards_service_config(self):
-        """Test OpenSearch Dashboards service configuration."""
-        services = get_all_services()
-        dashboards = next(
-            (s for s in services if s.id == "opensearch-dashboards"), None
+        # OpenSearch is now a grouped service
+        assert opensearch.containers is not None
+        assert len(opensearch.containers) == 2
+        # Check that it contains OpenSearch and Dashboards
+        container_names = [c.container_name for c in opensearch.containers]
+        assert "opensearch-node" in container_names
+        assert "opensearch-dashboards" in container_names
+        # Check that containers have ports
+        opensearch_container = next(
+            (c for c in opensearch.containers if c.container_name == "opensearch-node"),
+            None,
         )
+        assert opensearch_container is not None
+        assert len(opensearch_container.ports) >= 2  # Should have at least 9200 and 9600
 
+    def test_dashboards_in_opensearch_group(self):
+        """Test that OpenSearch Dashboards is part of opensearch grouped service."""
+        services = get_all_services()
+        opensearch = next((s for s in services if s.id == "opensearch"), None)
+
+        assert opensearch is not None
+        assert opensearch.containers is not None
+        dashboards = next(
+            (
+                c
+                for c in opensearch.containers
+                if c.container_name == "opensearch-dashboards"
+            ),
+            None,
+        )
         assert dashboards is not None
-        assert dashboards.container_name == "opensearch-dashboards"
-        assert dashboards.depends_on is not None
-        assert "opensearch" in dashboards.depends_on
+        assert any(p.container == 5601 for p in dashboards.ports)
 
 
 class TestServiceConfigMakeCommands:
@@ -244,14 +280,20 @@ class TestServiceConfigMakeCommands:
             )
 
     def test_services_have_logs_command(self):
-        """Test that services have logs command."""
+        """Test that single-container services have logs command."""
         services = get_all_services()
 
         for service in services:
-            # Most services should have logs command
-            if (
-                service.id != "opensearch-dashboards"
-            ):  # Dashboards might use different command
+            # Grouped services don't have logs at service level, but at container level
+            if service.containers:
+                # Each container within a grouped service should have a logs command
+                for container in service.containers:
+                    if container.make_commands:
+                        assert "logs" in container.make_commands, (
+                            f"Container {container.container_name} missing logs command"
+                        )
+            else:
+                # Single-container services should have logs command
                 assert "logs" in service.make_commands, (
                     f"Service {service.id} missing logs command"
                 )
@@ -276,31 +318,60 @@ class TestServiceConfigPorts:
         services = get_all_services()
 
         for service in services:
-            for port in service.ports:
-                # Valid port range is 1-65535
-                assert 1 <= port.container <= 65535, (
-                    f"Invalid container port in {service.id}"
-                )
-                assert 1 <= port.host <= 65535, f"Invalid host port in {service.id}"
+            if service.containers:
+                # For grouped services, check ports in containers
+                for container in service.containers:
+                    for port in container.ports:
+                        # Valid port range is 1-65535
+                        assert 1 <= port.container <= 65535, (
+                            f"Invalid container port in {service.id}/{container.container_name}"
+                        )
+                        assert 1 <= port.host <= 65535, (
+                            f"Invalid host port in {service.id}/{container.container_name}"
+                        )
+            else:
+                # For single services, check ports directly
+                for port in service.ports:
+                    # Valid port range is 1-65535
+                    assert 1 <= port.container <= 65535, (
+                        f"Invalid container port in {service.id}"
+                    )
+                    assert 1 <= port.host <= 65535, f"Invalid host port in {service.id}"
 
     def test_port_descriptions(self):
         """Test that ports have descriptions."""
         services = get_all_services()
 
         for service in services:
-            for port in service.ports:
-                assert port.description is not None
-                assert len(port.description) > 0
+            if service.containers:
+                # For grouped services, check ports in containers
+                for container in service.containers:
+                    for port in container.ports:
+                        assert port.description is not None
+                        assert len(port.description) > 0
+            else:
+                # For single services, check ports directly
+                for port in service.ports:
+                    assert port.description is not None
+                    assert len(port.description) > 0
 
     def test_no_duplicate_host_ports(self):
-        """Test that no two services use the same host port."""
+        """Test that no two containers use the same host port."""
         services = get_all_services()
         used_ports = set()
 
         for service in services:
-            for port in service.ports:
-                assert port.host not in used_ports, f"Duplicate host port {port.host}"
-                used_ports.add(port.host)
+            if service.containers:
+                # For grouped services, check ports in containers
+                for container in service.containers:
+                    for port in container.ports:
+                        assert port.host not in used_ports, f"Duplicate host port {port.host}"
+                        used_ports.add(port.host)
+            else:
+                # For single services, check ports directly
+                for port in service.ports:
+                    assert port.host not in used_ports, f"Duplicate host port {port.host}"
+                    used_ports.add(port.host)
 
 
 class TestServiceConfigComposeFiles:

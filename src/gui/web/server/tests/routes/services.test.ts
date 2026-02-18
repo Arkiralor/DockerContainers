@@ -42,7 +42,8 @@ describe('Services Routes', () => {
       const response = await request(app).get('/api/services')
 
       expect(response.status).toBe(200)
-      expect(response.body).toHaveLength(4)
+      // Now we have 3 services: postgresql, redis, opensearch (opensearch-dashboards is part of opensearch)
+      expect(response.body).toHaveLength(3)
       expect(response.body[0]).toMatchObject({
         id: 'postgresql',
         name: 'PostgreSQL',
@@ -50,6 +51,13 @@ describe('Services Routes', () => {
         exists: true,
         running: true,
       })
+
+      // Check that opensearch is a grouped service
+      const opensearchService = response.body.find((s: { id: string }) => s.id === 'opensearch')
+      expect(opensearchService).toBeDefined()
+      expect(opensearchService.isGrouped).toBe(true)
+      expect(opensearchService.containers).toHaveLength(2)
+      expect(opensearchService.running).toBe(true) // At least one container is running
     })
 
     it('should return services with exists:false when containers do not exist', async () => {
@@ -58,7 +66,7 @@ describe('Services Routes', () => {
       const response = await request(app).get('/api/services')
 
       expect(response.status).toBe(200)
-      expect(response.body).toHaveLength(4)
+      expect(response.body).toHaveLength(3)
       expect(response.body[0]).toMatchObject({
         id: 'postgresql',
         name: 'PostgreSQL',
@@ -153,15 +161,6 @@ describe('Services Routes', () => {
       expect(response.body).toEqual({ error: 'Service not found' })
     })
 
-    it('should return 400 for dashboards service', async () => {
-      const response = await request(app).post('/api/services/dashboards/start')
-
-      expect(response.status).toBe(400)
-      expect(response.body).toMatchObject({
-        error: expect.stringContaining('OpenSearch Dashboards starts automatically'),
-      })
-    })
-
     it('should return 500 on make command failure', async () => {
       const mockExec = vi.mocked(exec)
       mockExec.mockImplementation((cmd: any, options: any, callback: any) => {
@@ -216,15 +215,6 @@ describe('Services Routes', () => {
 
       expect(response.status).toBe(404)
       expect(response.body).toEqual({ error: 'Service not found' })
-    })
-
-    it('should return 400 for dashboards service', async () => {
-      const response = await request(app).post('/api/services/dashboards/stop')
-
-      expect(response.status).toBe(400)
-      expect(response.body).toMatchObject({
-        error: expect.stringContaining('OpenSearch Dashboards stops automatically'),
-      })
     })
 
     it('should return error details on error', async () => {
