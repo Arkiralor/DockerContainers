@@ -2,7 +2,8 @@
 
 ## Summary
 
-All tests in the Web GUI are now passing. Some tests have been intentionally skipped due to a test infrastructure limitation that does not affect the actual functionality.
+All tests in the Web GUI are now passing. Some tests have been intentionally skipped due to a test infrastructure
+limitation that does not affect the actual functionality.
 
 ## Test Results
 
@@ -11,7 +12,7 @@ All tests in the Web GUI are now passing. Some tests have been intentionally ski
 - **Tests**: 121 passed, 10 skipped
 - **Total Coverage**: 131 tests
 
-#### Breakdown by File:
+#### Breakdown by File
 - `tests/services/docker.test.ts`: 33 passed
 - `tests/services/websocket.test.ts`: 7 passed, 9 skipped
 - `tests/integration/websocket-flow.test.ts`: 11 passed, 1 skipped
@@ -32,13 +33,15 @@ All tests in the Web GUI are now passing. Some tests have been intentionally ski
 
 Ten tests have been skipped due to a **module loading order issue** in the test environment:
 
-**Technical Explanation**: The WebSocket service module captures JavaScript's native `setInterval` function when it's first imported. This happens before our test mocks can intercept it, preventing tests from controlling interval-based periodic behavior.
+**Technical Explanation**: The WebSocket service module captures JavaScript's native `setInterval` function when
+it's first imported. This happens before our test mocks can intercept it, preventing tests from controlling
+interval-based periodic behavior.
 
 **Impact**: This is purely a test infrastructure limitation and does NOT indicate any functional issues with the code.
 
 ### Which Tests Were Skipped
 
-#### WebSocket Service Unit Tests (9 skipped):
+#### WebSocket Service Unit Tests (9 skipped)
 1. `should emit container updates periodically`
 2. `should not start duplicate monitoring for same socket`
 3. `should stop container monitoring when client unsubscribes`
@@ -49,7 +52,7 @@ Ten tests have been skipped due to a **module loading order issue** in the test 
 8. `should handle errors in container monitoring gracefully`
 9. `should handle errors in stats monitoring gracefully`
 
-#### WebSocket Integration Tests (1 skipped):
+#### WebSocket Integration Tests (1 skipped)
 1. `should handle unsubscribing from individual containers`
 
 ### How the Functionality Is Verified
@@ -117,7 +120,8 @@ The test suite provides comprehensive coverage of:
 
 ## Conclusion
 
-The Web GUI test suite is comprehensive and reliable. The 10 skipped tests represent a test infrastructure limitation, not a code quality issue. All critical functionality is verified through the 483 passing tests (121 server + 362 client).
+The Web GUI test suite is comprehensive and reliable. The 10 skipped tests represent a test infrastructure limitation,
+not a code quality issue. All critical functionality is verified through the 483 passing tests (121 server + 362 client).
 
 **Status**: ✅ All functional tests passing
 **Code Quality**: ✅ Production-ready
