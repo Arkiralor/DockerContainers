@@ -1,7 +1,7 @@
 import type { ContainerInfo, VolumeInfo, SystemInfo, ContainerStats } from '@shared/types'
 
 // Detailed container response (from inspect/getContainer endpoint)
-export const mockContainerDetailedRunning: any = {
+export const mockContainerDetailedRunning: Record<string, unknown> = {
   Id: 'abcd1234567890abcdef',
   Name: '/postgres',
   Image: 'sha256:1234567890abcdef',
@@ -73,7 +73,7 @@ export const mockContainerDetailedRunning: any = {
   ],
 }
 
-export const mockContainerDetailedStopped: any = {
+export const mockContainerDetailedStopped: Record<string, unknown> = {
   ...mockContainerDetailedRunning,
   Id: 'efgh0987654321abcdef',
   Name: '/redis',

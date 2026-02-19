@@ -1,4 +1,4 @@
-import { createServer } from 'http'
+import { createServer, type Server as HttpServer } from 'http'
 import { Server } from 'socket.io'
 import express from 'express'
 import cors from 'cors'
@@ -8,9 +8,9 @@ import volumesRoutes from '../../src/routes/volumes.js'
 import systemRoutes from '../../src/routes/system.js'
 import { initializeWebSocket } from '../../src/services/websocket.js'
 
-let server: any
+let server: HttpServer | null = null
 let io: Server
-let httpServer: any
+let httpServer: HttpServer
 
 export const TEST_PORT = 5002
 export const TEST_WS_PORT = 5003
@@ -67,13 +67,13 @@ export async function stopTestServer() {
 
   await new Promise<void>((resolve, reject) => {
     io?.close()
-    server.close((err: any) => {
+    server.close((err?: Error) => {
       if (err) {
         reject(err)
       } else {
         server = null
-        io = null as any
-        httpServer = null
+        io = null as unknown as Server
+        httpServer = null as unknown as HttpServer
         console.log('Test server stopped')
         resolve()
       }

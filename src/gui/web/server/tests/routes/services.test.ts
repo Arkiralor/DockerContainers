@@ -140,9 +140,9 @@ describe('Services Routes', () => {
   describe('POST /api/services/:serviceId/start', () => {
     it('should start a service successfully', async () => {
       const mockExec = vi.mocked(exec)
-      mockExec.mockImplementation((cmd: any, options: any, callback: any) => {
+      mockExec.mockImplementation((cmd: string, options: unknown, callback: (err: Error | null, result: { stdout: string; stderr: string }) => void) => {
         callback(null, { stdout: 'Service started\n', stderr: '' })
-        return {} as any
+        return {} as unknown as ReturnType<typeof exec>
       })
 
       const response = await request(app).post('/api/services/postgresql/start')
@@ -163,9 +163,9 @@ describe('Services Routes', () => {
 
     it('should return 500 on make command failure', async () => {
       const mockExec = vi.mocked(exec)
-      mockExec.mockImplementation((cmd: any, options: any, callback: any) => {
+      mockExec.mockImplementation((cmd: string, options: unknown, callback: (err: Error | null, result?: { stdout: string; stderr: string }) => void) => {
         callback(new Error('Make command failed'), { stdout: '', stderr: 'Error message' })
-        return {} as any
+        return {} as unknown as ReturnType<typeof exec>
       })
 
       const response = await request(app).post('/api/services/postgresql/start')
@@ -178,9 +178,9 @@ describe('Services Routes', () => {
 
     it('should return error details on unexpected error', async () => {
       const mockExec = vi.mocked(exec)
-      mockExec.mockImplementation((cmd: any, options: any, callback: any) => {
+      mockExec.mockImplementation((cmd: string, options: unknown, callback: (err: Error | null, result?: { stdout: string; stderr: string }) => void) => {
         callback(new Error('Unexpected error'))
-        return {} as any
+        return {} as unknown as ReturnType<typeof exec>
       })
 
       const response = await request(app).post('/api/services/postgresql/start')
@@ -196,9 +196,9 @@ describe('Services Routes', () => {
   describe('POST /api/services/:serviceId/stop', () => {
     it('should stop a service successfully', async () => {
       const mockExec = vi.mocked(exec)
-      mockExec.mockImplementation((cmd: any, options: any, callback: any) => {
+      mockExec.mockImplementation((cmd: string, options: unknown, callback: (err: Error | null, result: { stdout: string; stderr: string }) => void) => {
         callback(null, { stdout: 'Service stopped\n', stderr: '' })
-        return {} as any
+        return {} as unknown as ReturnType<typeof exec>
       })
 
       const response = await request(app).post('/api/services/postgresql/stop')
@@ -219,9 +219,9 @@ describe('Services Routes', () => {
 
     it('should return error details on error', async () => {
       const mockExec = vi.mocked(exec)
-      mockExec.mockImplementation((cmd: any, options: any, callback: any) => {
+      mockExec.mockImplementation((cmd: string, options: unknown, callback: (err: Error | null, result?: { stdout: string; stderr: string }) => void) => {
         callback(new Error('Unexpected error'))
-        return {} as any
+        return {} as unknown as ReturnType<typeof exec>
       })
 
       const response = await request(app).post('/api/services/postgresql/stop')
