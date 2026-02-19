@@ -40,7 +40,8 @@ __pycache__/
 src/postgresql/initdb.d/*.out
 
 # Pre-compiled `requirements.txt` files (compile for every install)
-*requirements.txt
+*.requirements.txt*
+requirements.txt
 
 ## Projects-specific ignores
 CLAUDE.md
