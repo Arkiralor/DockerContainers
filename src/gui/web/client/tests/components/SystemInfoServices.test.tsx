@@ -72,11 +72,11 @@ describe('SystemInfoServices', () => {
       vi.mocked(useSystemInfo).mockReturnValue({
         data: undefined,
         isLoading: true,
-      } as any)
+      } as unknown as ReturnType<typeof useSystemInfo>)
       vi.mocked(useServices).mockReturnValue({
         data: mockServices,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       const { container } = renderWithProviders(<SystemInfoServices />)
       expect(container.firstChild).toBeNull()
@@ -86,11 +86,11 @@ describe('SystemInfoServices', () => {
       vi.mocked(useSystemInfo).mockReturnValue({
         data: mockSystemInfo,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useSystemInfo>)
       vi.mocked(useServices).mockReturnValue({
         data: undefined,
         isLoading: true,
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       const { container } = renderWithProviders(<SystemInfoServices />)
       expect(container.firstChild).toBeNull()
@@ -100,11 +100,11 @@ describe('SystemInfoServices', () => {
       vi.mocked(useSystemInfo).mockReturnValue({
         data: undefined,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useSystemInfo>)
       vi.mocked(useServices).mockReturnValue({
         data: mockServices,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       const { container } = renderWithProviders(<SystemInfoServices />)
       expect(container.firstChild).toBeNull()
@@ -116,11 +116,11 @@ describe('SystemInfoServices', () => {
       vi.mocked(useSystemInfo).mockReturnValue({
         data: mockSystemInfo,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useSystemInfo>)
       vi.mocked(useServices).mockReturnValue({
         data: mockServices,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
     })
 
     it('displays total services count', () => {
@@ -166,11 +166,11 @@ describe('SystemInfoServices', () => {
       vi.mocked(useSystemInfo).mockReturnValue({
         data: mockSystemInfo,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useSystemInfo>)
       vi.mocked(useServices).mockReturnValue({
         data: mockServices,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
     })
 
     it('renders stats in a grid layout', () => {
@@ -193,11 +193,11 @@ describe('SystemInfoServices', () => {
       vi.mocked(useSystemInfo).mockReturnValue({
         data: mockSystemInfo,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useSystemInfo>)
       vi.mocked(useServices).mockReturnValue({
         data: mockServices,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
     })
 
     it('displays icons with correct colors', () => {
@@ -216,11 +216,11 @@ describe('SystemInfoServices', () => {
       vi.mocked(useSystemInfo).mockReturnValue({
         data: mockSystemInfo,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useSystemInfo>)
       vi.mocked(useServices).mockReturnValue({
         data: [],
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       renderWithProviders(<SystemInfoServices />)
 
@@ -236,11 +236,11 @@ describe('SystemInfoServices', () => {
       vi.mocked(useSystemInfo).mockReturnValue({
         data: mockSystemInfo,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useSystemInfo>)
       vi.mocked(useServices).mockReturnValue({
         data: undefined,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       renderWithProviders(<SystemInfoServices />)
 
@@ -255,11 +255,11 @@ describe('SystemInfoServices', () => {
       vi.mocked(useSystemInfo).mockReturnValue({
         data: mockSystemInfo,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useSystemInfo>)
       vi.mocked(useServices).mockReturnValue({
         data: allRunning,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       renderWithProviders(<SystemInfoServices />)
 
@@ -274,11 +274,11 @@ describe('SystemInfoServices', () => {
       vi.mocked(useSystemInfo).mockReturnValue({
         data: mockSystemInfo,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useSystemInfo>)
       vi.mocked(useServices).mockReturnValue({
         data: allStopped,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       renderWithProviders(<SystemInfoServices />)
 

@@ -1,6 +1,17 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { useContainerUpdates, useContainerStats, useWebSocket } from '@/hooks/useWebSocket'
+
+vi.mock('socket.io-client', () => ({
+  io: vi.fn(() => ({
+    on: vi.fn(),
+    off: vi.fn(),
+    emit: vi.fn(),
+    disconnect: vi.fn(),
+    close: vi.fn(),
+    connected: false,
+  })),
+}))
 
 /**
  * Integration Test: Real-time WebSocket Updates

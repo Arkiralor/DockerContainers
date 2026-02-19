@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } from 'vitest'
 import { initializeWebSocket, broadcastContainerEvent } from '@/services/websocket'
 import { dockerService } from '@/services/docker'
 import { mockContainerList } from '../fixtures/docker'
@@ -36,10 +36,10 @@ vi.mock('@/utils/logger', () => ({
  */
 
 describe('WebSocket Service', () => {
-  let mockIo: any
-  let mockSocket: any
-  let toSpy: any
-  let intervalCallbacks: Map<number, Function>
+  let mockIo: { on: MockInstance; emit: MockInstance; to: MockInstance }
+  let mockSocket: { id: string; on: MockInstance; emit: MockInstance; disconnect: MockInstance }
+  let toSpy: MockInstance
+  let intervalCallbacks: Map<number, () => unknown>
   let intervalId: number
 
   beforeEach(() => {
@@ -50,14 +50,14 @@ describe('WebSocket Service', () => {
     intervalId = 0
 
     // Mock setInterval and clearInterval using spyOn
-    vi.spyOn(global, 'setInterval').mockImplementation(((callback: Function, _delay: number) => {
+    vi.spyOn(global, 'setInterval').mockImplementation(((callback: () => unknown) => {
       const id = ++intervalId
       intervalCallbacks.set(id, callback)
-      return id as any
-    }) as any)
+      return id as unknown as ReturnType<typeof setInterval>
+    }) as unknown as typeof setInterval)
 
-    vi.spyOn(global, 'clearInterval').mockImplementation((id: any) => {
-      intervalCallbacks.delete(id as number)
+    vi.spyOn(global, 'clearInterval').mockImplementation((id?: ReturnType<typeof setInterval>) => {
+      intervalCallbacks.delete(id as unknown as number)
     })
 
     // Create mock socket
@@ -138,7 +138,7 @@ describe('WebSocket Service', () => {
       connectionHandler(mockSocket)
 
       const subscribeHandler = mockSocket.on.mock.calls.find(
-        (call: any[]) => call[0] === 'subscribe:containers'
+        (call: unknown[]) => call[0] === 'subscribe:containers'
       )[1]
 
       subscribeHandler()
@@ -160,7 +160,7 @@ describe('WebSocket Service', () => {
       connectionHandler(mockSocket)
 
       const subscribeHandler = mockSocket.on.mock.calls.find(
-        (call: any[]) => call[0] === 'subscribe:containers'
+        (call: unknown[]) => call[0] === 'subscribe:containers'
       )[1]
 
       subscribeHandler()
@@ -180,7 +180,7 @@ describe('WebSocket Service', () => {
       connectionHandler(mockSocket)
 
       const subscribeHandler = mockSocket.on.mock.calls.find(
-        (call: any[]) => call[0] === 'subscribe:containers'
+        (call: unknown[]) => call[0] === 'subscribe:containers'
       )[1]
 
       subscribeHandler()
@@ -202,10 +202,10 @@ describe('WebSocket Service', () => {
       connectionHandler(mockSocket)
 
       const subscribeHandler = mockSocket.on.mock.calls.find(
-        (call: any[]) => call[0] === 'subscribe:containers'
+        (call: unknown[]) => call[0] === 'subscribe:containers'
       )[1]
       const unsubscribeHandler = mockSocket.on.mock.calls.find(
-        (call: any[]) => call[0] === 'unsubscribe:containers'
+        (call: unknown[]) => call[0] === 'unsubscribe:containers'
       )[1]
 
       subscribeHandler()
@@ -227,7 +227,7 @@ describe('WebSocket Service', () => {
       connectionHandler(mockSocket)
 
       const subscribeHandler = mockSocket.on.mock.calls.find(
-        (call: any[]) => call[0] === 'subscribe:stats'
+        (call: unknown[]) => call[0] === 'subscribe:stats'
       )[1]
 
       subscribeHandler('abcd1234567890')
@@ -247,7 +247,7 @@ describe('WebSocket Service', () => {
       connectionHandler(mockSocket)
 
       const subscribeHandler = mockSocket.on.mock.calls.find(
-        (call: any[]) => call[0] === 'subscribe:stats'
+        (call: unknown[]) => call[0] === 'subscribe:stats'
       )[1]
 
       subscribeHandler('abcd1234567890')
@@ -267,7 +267,7 @@ describe('WebSocket Service', () => {
       connectionHandler(mockSocket)
 
       const subscribeHandler = mockSocket.on.mock.calls.find(
-        (call: any[]) => call[0] === 'subscribe:stats'
+        (call: unknown[]) => call[0] === 'subscribe:stats'
       )[1]
 
       subscribeHandler('abcd1234567890')
@@ -289,10 +289,10 @@ describe('WebSocket Service', () => {
       connectionHandler(mockSocket)
 
       const subscribeHandler = mockSocket.on.mock.calls.find(
-        (call: any[]) => call[0] === 'subscribe:stats'
+        (call: unknown[]) => call[0] === 'subscribe:stats'
       )[1]
       const unsubscribeHandler = mockSocket.on.mock.calls.find(
-        (call: any[]) => call[0] === 'unsubscribe:stats'
+        (call: unknown[]) => call[0] === 'unsubscribe:stats'
       )[1]
 
       subscribeHandler('abcd1234567890')
@@ -317,13 +317,13 @@ describe('WebSocket Service', () => {
       connectionHandler(mockSocket)
 
       const containerSubscribeHandler = mockSocket.on.mock.calls.find(
-        (call: any[]) => call[0] === 'subscribe:containers'
+        (call: unknown[]) => call[0] === 'subscribe:containers'
       )[1]
       const statsSubscribeHandler = mockSocket.on.mock.calls.find(
-        (call: any[]) => call[0] === 'subscribe:stats'
+        (call: unknown[]) => call[0] === 'subscribe:stats'
       )[1]
       const disconnectHandler = mockSocket.on.mock.calls.find(
-        (call: any[]) => call[0] === 'disconnect'
+        (call: unknown[]) => call[0] === 'disconnect'
       )[1]
 
       containerSubscribeHandler()
@@ -381,7 +381,7 @@ describe('WebSocket Service', () => {
       connectionHandler(mockSocket)
 
       const subscribeHandler = mockSocket.on.mock.calls.find(
-        (call: any[]) => call[0] === 'subscribe:containers'
+        (call: unknown[]) => call[0] === 'subscribe:containers'
       )[1]
 
       subscribeHandler()
@@ -402,7 +402,7 @@ describe('WebSocket Service', () => {
       connectionHandler(mockSocket)
 
       const subscribeHandler = mockSocket.on.mock.calls.find(
-        (call: any[]) => call[0] === 'subscribe:stats'
+        (call: unknown[]) => call[0] === 'subscribe:stats'
       )[1]
 
       subscribeHandler('abcd1234567890')

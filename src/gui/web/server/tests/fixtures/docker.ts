@@ -1,6 +1,7 @@
 import { vi } from 'vitest'
+import type Dockerode from 'dockerode'
 
-export const mockContainerData: Partial<any> = {
+export const mockContainerData: Partial<Dockerode.ContainerInfo> = {
   Id: 'abcd1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
   Names: ['/postgres'],
   Image: 'postgres:16',
