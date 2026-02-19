@@ -46,5 +46,7 @@ requirements.txt
 ## Projects-specific ignores
 CLAUDE.md
 IMPROVENTS.md
+*backups/*
 dev-tools/
 dev_tools/
+.claude/
