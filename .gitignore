@@ -2,7 +2,9 @@
 .DS_Store
 
 # VS Code settings
-.vscode/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 
 # Docker artifacts
 *.log
