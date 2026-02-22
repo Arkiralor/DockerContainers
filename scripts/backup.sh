@@ -149,6 +149,90 @@ backup_opensearch() {
     fi
 }
 
+backup_mysql() {
+    echo "🗄️  Backing up MySQL..."
+
+    local service_dir="src/mysql"
+    local backup_file="${BACKUP_DIR}/mysql_${TIMESTAMP}.sql"
+
+    if [ -d "$service_dir" ]; then
+        cd "$service_dir"
+
+        # Check if MySQL container is running
+        if command -v docker-compose &> /dev/null; then
+            container_id=$(docker-compose ps -q mysql 2>/dev/null)
+        else
+            container_id=$(docker compose ps -q mysql 2>/dev/null)
+        fi
+
+        if [ -n "$container_id" ]; then
+            # Get database credentials from .env file
+            if [ -f ".env" ]; then
+                source .env
+            else
+                echo "⚠️  No .env file found for MySQL, using defaults"
+                MYSQL_DATABASE=${MYSQL_DATABASE:-mysql}
+                MYSQL_USER=${MYSQL_USER:-root}
+            fi
+
+            # Create database dump
+            docker exec "$container_id" mysqldump -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE" > "../../$backup_file"
+
+            if [ $? -eq 0 ]; then
+                echo "✅ MySQL backup created: $backup_file"
+            else
+                echo "❌ Failed to create MySQL backup"
+            fi
+        else
+            echo "⚠️  MySQL container not running, skipping database backup"
+        fi
+
+        cd ../..
+    fi
+}
+
+backup_mongodb() {
+    echo "🍃 Backing up MongoDB..."
+
+    local service_dir="src/mongodb"
+    local backup_file="${BACKUP_DIR}/mongodb_${TIMESTAMP}.archive"
+
+    if [ -d "$service_dir" ]; then
+        cd "$service_dir"
+
+        # Check if MongoDB container is running
+        if command -v docker-compose &> /dev/null; then
+            container_id=$(docker-compose ps -q mongodb 2>/dev/null)
+        else
+            container_id=$(docker compose ps -q mongodb 2>/dev/null)
+        fi
+
+        if [ -n "$container_id" ]; then
+            # Get database credentials from .env file
+            if [ -f ".env" ]; then
+                source .env
+            else
+                echo "⚠️  No .env file found for MongoDB, using defaults"
+                MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE:-admin}
+                MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME:-root}
+            fi
+
+            # Create database dump
+            docker exec "$container_id" mongodump --archive --db "$MONGO_INITDB_DATABASE" --username "$MONGO_INITDB_ROOT_USERNAME" --password "$MONGO_INITDB_ROOT_PASSWORD" > "../../$backup_file"
+
+            if [ $? -eq 0 ]; then
+                echo "✅ MongoDB backup created: $backup_file"
+            else
+                echo "❌ Failed to create MongoDB backup"
+            fi
+        else
+            echo "⚠️  MongoDB container not running, skipping database backup"
+        fi
+
+        cd ../..
+    fi
+}
+
 # Function to backup configurations
 backup_configurations() {
     echo "⚙️  Backing up configurations..."

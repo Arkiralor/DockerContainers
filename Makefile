@@ -96,6 +96,21 @@ logs-opensearch: ## Show OpenSearch logs
 logs-dashboards: ## Show OpenSearch Dashboards logs
 	@cd src/opensearch && docker-compose logs -f opensearch-dashboards
 
+logs-minio:
+	@cd src/minio && docker-compose logs -f mini-io
+
+logs-mongo:
+	@cd src/mongodb && docker-compose logs -f mongodb
+
+logs-mysql:
+	@cd src/mysql && docker-compose logs -f mysql
+
+logs-neo4j:
+	@cd src/mysql && docker-compose logs -f mysql
+
+logs-smtp4dev:
+	@cd src/smtp4dev && docker-compose logs -f smtp4dev
+
 # Individual service commands
 start-redis: ## Start only Redis
 	@echo "Starting Redis..."
@@ -105,9 +120,29 @@ start-postgres: ## Start only PostgreSQL
 	@echo "Starting PostgreSQL..."
 	@cd src/postgresql && docker-compose up -d
 
-start-opensearch: ## Start only OpenSearch
+start-opensearch: ## Start only OpenSearch with Dashboards
 	@echo "Starting OpenSearch..."
 	@cd src/opensearch && docker-compose up -d
+
+start-minio:
+	@echo "Starting MiniIO..."
+	@cd src/minio && docker-compose up -d
+
+start-mongodb:
+	@echo "Starting MongoDB..."
+	@cd src/mongodb && docker-compose up -d
+
+start-mysql:
+	@echo "Starting MySQL..."
+	@cd src/mysql && docker-compose up -d
+
+start-neo4j:
+	@echo "Starting Neo4j..."
+	@cd src/neo4j && docker-compose up -d
+
+start-smtp4dev:
+	@echo "Starting SMTP4Dev..."
+	@cd src/smtp4dev && docker-compose up -d
 
 stop-redis: ## Stop Redis
 	@echo "Stopping Redis..."
@@ -121,6 +156,66 @@ stop-opensearch: ## Stop OpenSearch
 	@echo "Stopping OpenSearch..."
 	@cd src/opensearch && docker-compose stop
 
+stop-minio:
+	@echo "Stopping MiniIO..."
+	@cd src/minio && docker-compose stop
+
+stop-mongodb:
+	@echo "Stopping MongoDB..."
+	@cd src/mongodb && docker-compose stop
+
+stop-mysql:
+	@echo "Stopping MySQL..."
+	@cd src/mysql && docker-compose stop
+
+stop-neo4j:
+	@echo "Stopping Neo4j..."
+	@cd src/neo4j && docker-compose stop
+
+stop-smtp4dev:
+	@echo "Stopping SMTP4Dev..."
+	@cd src/smtp4dev && docker-compose stop
+
+suspend-redis:
+	@echo "Suspending Redis..."
+	@cd src/redis && docker-compose down
+	@echo "...Redis suspended."
+
+suspend-postgres:
+	@echo "Suspending PostgreSQL..."
+	@cd src/postgresql && docker-compose down
+	@echo "...PostgreSQL suspended."
+
+suspend-opensearch:
+	@echo "Suspending OpenSearch..."
+	@cd src/opensearch && docker-compose down
+	@echo "...OpenSearch suspended."
+
+suspend-minio:
+	@echo "Suspending MiniIO..."
+	@cd src/minio && docker-compose down
+	@echo "...MiniIO suspended."
+
+suspend-mongodb:
+	@echo "Suspending MongoDB..."
+	@cd src/mongodb && docker-compose down
+	@echo "...MongoDB suspended."
+
+suspend-mysql:
+	@echo "Suspending MySQL..."
+	@cd src/mysql && docker-compose down
+	@echo "...MySQL suspended."
+
+suspend-neo4j:
+	@echo "Suspending Neo4j..."
+	@cd src/neo4j && docker-compose down
+	@echo "...Neo4j suspended."
+
+suspend-smtp4dev:
+	@echo "Suspending SMTP4Dev..."
+	@cd src/smtp4dev && docker-compose down
+	@echo "...SMTP4Dev suspended."
+
 restart-redis: stop-redis start-redis ## Restart Redis
 	@echo "Redis restarted"
 
@@ -129,6 +224,21 @@ restart-postgres: stop-postgres start-postgres ## Restart PostgreSQL
 
 restart-opensearch: stop-opensearch start-opensearch ## Restart OpenSearch
 	@echo "OpenSearch restarted"
+
+restart-minio: stop-minio start-minio ## Restart MiniIO
+	@echo "MiniIO restarted"
+
+restart-mongodb: stop-mongodb start-mongodb ## Restart MongoDB
+	@echo "MongoDB restarted"
+
+restart-mysql: stop-mysql start-mysql ## Restart MySQL
+	@echo "MySQL restarted"
+
+restart-neo4j: stop-neo4j start-neo4j ## Restart Neo4j
+	@echo "Neo4j restarted"
+
+restart-smtp4dev: stop-smtp4dev start-smtp4dev ## Restart SMTP4Dev
+	@echo "SMTP4Dev restarted"
 
 # Multi-Redis specific
 start-multi-redis: ## Start multi-instance Redis setup

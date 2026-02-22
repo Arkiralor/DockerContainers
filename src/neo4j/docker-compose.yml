@@ -1,0 +1,47 @@
+services:
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j
+    environment:
+      NEO4J_AUTH: "neo4j/password"
+      NEO4J_dbms_memory_pagecache_size: 512M
+      NEO4J_dbms_memory_heap_initial__size: 512M
+      NEO4J_dbms_memory_heap_max__size: 1G
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+      # Uncomment to mount custom config
+      # - ./config/neo4j.conf:/conf/neo4j.conf:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "cypher-shell -u neo4j -p password 'RETURN 1'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: '1.0'
+        reservations:
+          memory: 512m
+
+    # Uncomment to add networks
+    # networks:
+    #   - neo4j-net
+
+    # Uncomment to add extra hosts
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
+
+volumes:
+  neo4j_data:
+    driver: local
