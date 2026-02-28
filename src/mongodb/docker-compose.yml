@@ -14,10 +14,15 @@ services:
       # - ./config/mongodb.conf:/etc/mongodb.conf:ro
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "mongo --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD} --eval 'db.adminCommand(\"ping\")' --quiet"]
+      test: ["CMD-SHELL", "mongosh --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD} --eval 'db.adminCommand(\"ping\")' --quiet"]
       interval: 30s
       timeout: 10s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: "1.0"
     logging:
       driver: "json-file"
       options:
@@ -34,7 +39,13 @@ services:
       - "8081:8081"
     restart: unless-stopped
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: "0.25"
     logging:
       driver: "json-file"
       options:

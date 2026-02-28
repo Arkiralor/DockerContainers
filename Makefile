@@ -259,6 +259,21 @@ shell-postgres: ## Open PostgreSQL shell
 shell-opensearch: ## Open bash shell in OpenSearch container
 	@cd src/opensearch && docker-compose exec opensearch bash
 
+shell-minio: ## Open bash shell in MiniIO container
+	@cd src/minio && docker-compose exec mini-io sh
+
+shell-mongodb: ## Open MongoDB shell
+	@cd src/mongodb && docker-compose exec mongodb mongosh
+
+shell-mysql: ## Open MySQL shell
+	@cd src/mysql && docker-compose exec mysql mysql -uroot -p
+
+shell-neo4j: ## Open Neo4j shell
+	@cd src/neo4j && docker-compose exec neo4j cypher-shell -u neo4j -p password
+
+shell-smtp4dev: ## Open bash shell in SMTP4Dev container
+	@cd src/smtp4dev && docker-compose exec smtp4dev sh
+
 # Quick status checks
 ps: ## Show running containers (short format)
 	@docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "postgres|redis|opensearch|NAMES"
