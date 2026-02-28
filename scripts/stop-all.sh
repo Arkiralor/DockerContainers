@@ -8,7 +8,7 @@ set -e
 echo "Stopping all Docker services..."
 
 # Array of service directories
-services=("src/opensearch" "src/postgresql" "src/redis")
+services=("src/opensearch" "src/postgresql" "src/redis" "src/minio" "src/mongodb" "src/mysql" "src/neo4j" "src/smtp4dev")
 
 # Function to stop a service
 stop_service() {
