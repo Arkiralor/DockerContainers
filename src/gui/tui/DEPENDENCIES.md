@@ -64,7 +64,7 @@ pip install -e ".[dev]"
 ```
 
 Includes all test dependencies plus:
-- black>=23.0.0
+- black>=24.4.0
 - ruff>=0.1.0
 - mypy>=1.7.0
 

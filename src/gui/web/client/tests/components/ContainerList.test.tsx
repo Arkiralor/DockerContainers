@@ -22,7 +22,7 @@ vi.mock('@/components/ContainerDetailsModal', () => ({
 }))
 
 vi.mock('@/components/Dialog', () => ({
-  default: ({ isOpen, title, message, onConfirm, onCancel }: any) =>
+  default: ({ isOpen, title, message, onConfirm, onCancel }: { isOpen: boolean; title: string; message: string; onConfirm: () => void; onCancel: () => void }) =>
     isOpen ? (
       <div>
         <h2>{title}</h2>
@@ -34,7 +34,7 @@ vi.mock('@/components/Dialog', () => ({
 }))
 
 vi.mock('@/components/ContainerCard', () => ({
-  default: ({ container, onStart, onStop, onRestart, onRemove, onViewDetails, isLoading }: any) => (
+  default: ({ container, onStart, onStop, onRestart, onRemove, onViewDetails, isLoading }: { container: { Id: string; Names: string[]; State: string }; onStart: (id: string) => void; onStop: (id: string) => void; onRestart: (id: string) => void; onRemove: (id: string) => void; onViewDetails: (id: string) => void; isLoading: boolean }) => (
     <div>
       <h3>{container.Names[0].replace(/^\//, '')}</h3>
       {container.State.toLowerCase() === 'running' ? (
@@ -89,10 +89,10 @@ describe('ContainerList', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(useStartContainer).mockReturnValue(mockMutations as any)
-    vi.mocked(useStopContainer).mockReturnValue(mockMutations as any)
-    vi.mocked(useRestartContainer).mockReturnValue(mockMutations as any)
-    vi.mocked(useRemoveContainer).mockReturnValue(mockMutations as any)
+    vi.mocked(useStartContainer).mockReturnValue(mockMutations as unknown as ReturnType<typeof useStartContainer>)
+    vi.mocked(useStopContainer).mockReturnValue(mockMutations as unknown as ReturnType<typeof useStartContainer>)
+    vi.mocked(useRestartContainer).mockReturnValue(mockMutations as unknown as ReturnType<typeof useStartContainer>)
+    vi.mocked(useRemoveContainer).mockReturnValue(mockMutations as unknown as ReturnType<typeof useStartContainer>)
   })
 
   describe('Loading State', () => {
@@ -102,7 +102,7 @@ describe('ContainerList', () => {
         isLoading: true,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useContainers>)
 
       renderWithProviders(<ContainerList />)
 
@@ -119,7 +119,7 @@ describe('ContainerList', () => {
         isLoading: false,
         error: mockError,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useContainers>)
 
       renderWithProviders(<ContainerList />)
 
@@ -134,7 +134,7 @@ describe('ContainerList', () => {
         isLoading: false,
         error: mockError,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useContainers>)
 
       renderWithProviders(<ContainerList />)
 
@@ -151,7 +151,7 @@ describe('ContainerList', () => {
         isLoading: false,
         error: mockError,
         refetch: mockRefetch,
-      } as any)
+      } as unknown as ReturnType<typeof useContainers>)
 
       renderWithProviders(<ContainerList />)
 
@@ -168,7 +168,7 @@ describe('ContainerList', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useContainers>)
 
       renderWithProviders(<ContainerList />)
 
@@ -184,7 +184,7 @@ describe('ContainerList', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useContainers>)
 
       renderWithProviders(<ContainerList />)
 
@@ -201,7 +201,7 @@ describe('ContainerList', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useContainers>)
     })
 
     it('displays containers heading', () => {
@@ -238,13 +238,13 @@ describe('ContainerList', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useContainers>)
     })
 
     it('calls start mutation when start is clicked', async () => {
       const user = userEvent.setup()
       const mockStart = { mutate: vi.fn(), isPending: false }
-      vi.mocked(useStartContainer).mockReturnValue(mockStart as any)
+      vi.mocked(useStartContainer).mockReturnValue(mockStart as unknown as ReturnType<typeof useStartContainer>)
 
       const stoppedContainer = { ...mockContainerRunning, State: 'exited' }
       vi.mocked(useContainers).mockReturnValue({
@@ -252,7 +252,7 @@ describe('ContainerList', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useContainers>)
 
       renderWithProviders(<ContainerList />)
 
@@ -277,7 +277,7 @@ describe('ContainerList', () => {
     it('calls stop mutation when confirmed', async () => {
       const user = userEvent.setup()
       const mockStop = { mutate: vi.fn(), isPending: false }
-      vi.mocked(useStopContainer).mockReturnValue(mockStop as any)
+      vi.mocked(useStopContainer).mockReturnValue(mockStop as unknown as ReturnType<typeof useStopContainer>)
 
       renderWithProviders(<ContainerList />)
 
@@ -297,7 +297,7 @@ describe('ContainerList', () => {
     it('calls restart mutation when restart is clicked', async () => {
       const user = userEvent.setup()
       const mockRestart = { mutate: vi.fn(), isPending: false }
-      vi.mocked(useRestartContainer).mockReturnValue(mockRestart as any)
+      vi.mocked(useRestartContainer).mockReturnValue(mockRestart as unknown as ReturnType<typeof useRestartContainer>)
 
       renderWithProviders(<ContainerList />)
 
@@ -322,7 +322,7 @@ describe('ContainerList', () => {
     it('calls remove mutation with force when container is running', async () => {
       const user = userEvent.setup()
       const mockRemove = { mutate: vi.fn(), isPending: false }
-      vi.mocked(useRemoveContainer).mockReturnValue(mockRemove as any)
+      vi.mocked(useRemoveContainer).mockReturnValue(mockRemove as unknown as ReturnType<typeof useRemoveContainer>)
 
       renderWithProviders(<ContainerList />)
 
@@ -350,7 +350,7 @@ describe('ContainerList', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useContainers>)
     })
 
     it('opens details modal when details button is clicked', async () => {
@@ -376,7 +376,7 @@ describe('ContainerList', () => {
         isLoading: false,
         error: null,
         refetch: mockRefetch,
-      } as any)
+      } as unknown as ReturnType<typeof useContainers>)
 
       renderWithProviders(<ContainerList />)
 
@@ -394,8 +394,8 @@ describe('ContainerList', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as any)
-      vi.mocked(useStartContainer).mockReturnValue({ isPending: true } as any)
+      } as unknown as ReturnType<typeof useContainers>)
+      vi.mocked(useStartContainer).mockReturnValue({ isPending: true } as unknown as ReturnType<typeof useContainers>)
 
       renderWithProviders(<ContainerList />)
 

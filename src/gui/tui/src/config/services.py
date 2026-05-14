@@ -121,6 +121,23 @@ SERVICES: dict[str, ServiceConfig] = {
             ),
         ],
     ),
+    "minio": ServiceConfig(
+        id="minio",
+        name="libreFS",
+        description="S3-compatible object storage for local development",
+        container_name="librefs",
+        ports=[
+            ServicePort(container=9000, host=9000, description="S3 API"),
+            ServicePort(container=9001, host=9001, description="Web Console"),
+        ],
+        make_commands={
+            "start": "start-minio",
+            "stop": "stop-minio",
+            "logs": "logs-minio",
+            "shell": "shell-minio",
+        },
+        compose_file_path="src/minio/docker-compose.yml",
+    ),
 }
 
 

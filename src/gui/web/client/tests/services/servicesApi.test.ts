@@ -6,7 +6,7 @@ const fetchMock = vi.fn()
 
 describe('ServicesApiService', () => {
   beforeEach(() => {
-    global.fetch = fetchMock as any
+    global.fetch = fetchMock as unknown as typeof fetch
     fetchMock.mockClear()
   })
 

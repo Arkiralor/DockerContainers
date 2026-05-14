@@ -49,6 +49,19 @@ export const SERVICES = {
       logs: 'logs-dashboards'
     },
     dependsOn: 'opensearch'
+  },
+  minio: {
+    id: 'minio',
+    name: 'libreFS',
+    description: 'S3-compatible object storage',
+    composeDir: 'src/minio',
+    containerName: 'librefs',
+    ports: [9000, 9001],
+    makeCommands: {
+      start: 'start-minio',
+      stop: 'stop-minio',
+      logs: 'logs-minio'
+    }
   }
 } as const
 

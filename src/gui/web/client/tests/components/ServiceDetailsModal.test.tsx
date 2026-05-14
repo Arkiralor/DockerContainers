@@ -52,11 +52,11 @@ describe('ServiceDetailsModal', () => {
     vi.mocked(useService).mockReturnValue({
       data: mockService,
       isLoading: false,
-    } as any)
+    } as unknown as ReturnType<typeof useService>)
     vi.mocked(useServiceLogs).mockReturnValue({
       data: mockLogs,
       isLoading: false,
-    } as any)
+    } as unknown as ReturnType<typeof useServiceLogs>)
   })
 
   describe('Modal Visibility', () => {
@@ -88,7 +88,7 @@ describe('ServiceDetailsModal', () => {
       vi.mocked(useService).mockReturnValue({
         data: undefined,
         isLoading: true,
-      } as any)
+      } as unknown as ReturnType<typeof useService>)
 
       renderWithProviders(
         <ServiceDetailsModal
@@ -107,7 +107,7 @@ describe('ServiceDetailsModal', () => {
       vi.mocked(useService).mockReturnValue({
         data: undefined,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useService>)
 
       const { container } = renderWithProviders(
         <ServiceDetailsModal
@@ -126,7 +126,7 @@ describe('ServiceDetailsModal', () => {
       vi.mocked(useService).mockReturnValue({
         data: undefined,
         isLoading: true,
-      } as any)
+      } as unknown as ReturnType<typeof useService>)
 
       renderWithProviders(
         <ServiceDetailsModal
@@ -219,7 +219,7 @@ describe('ServiceDetailsModal', () => {
       vi.mocked(useService).mockReturnValue({
         data: stoppedService,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useService>)
 
       renderWithProviders(
         <ServiceDetailsModal
@@ -238,7 +238,7 @@ describe('ServiceDetailsModal', () => {
       vi.mocked(useService).mockReturnValue({
         data: notCreatedService,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useService>)
 
       renderWithProviders(
         <ServiceDetailsModal
@@ -270,7 +270,7 @@ describe('ServiceDetailsModal', () => {
       vi.mocked(useService).mockReturnValue({
         data: multiPortService,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useService>)
 
       renderWithProviders(
         <ServiceDetailsModal
@@ -323,7 +323,7 @@ describe('ServiceDetailsModal', () => {
       vi.mocked(useServiceLogs).mockReturnValue({
         data: { logs: '' },
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useServiceLogs>)
 
       renderWithProviders(
         <ServiceDetailsModal
@@ -343,7 +343,7 @@ describe('ServiceDetailsModal', () => {
       vi.mocked(useServiceLogs).mockReturnValue({
         data: undefined,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useServiceLogs>)
 
       renderWithProviders(
         <ServiceDetailsModal
@@ -411,7 +411,7 @@ describe('ServiceDetailsModal', () => {
       vi.mocked(useService).mockReturnValue({
         data: noPorts,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useService>)
 
       renderWithProviders(
         <ServiceDetailsModal
@@ -425,11 +425,11 @@ describe('ServiceDetailsModal', () => {
     })
 
     it('does not display ports section when ports are undefined', () => {
-      const noPorts = { ...mockService, ports: undefined as any }
+      const noPorts = { ...mockService, ports: undefined as unknown as number[] }
       vi.mocked(useService).mockReturnValue({
         data: noPorts,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useService>)
 
       renderWithProviders(
         <ServiceDetailsModal

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, type MockInstance } from 'vitest'
 import Docker from 'dockerode'
 import { dockerService } from '@/services/docker'
 import { mockContainerList, mockContainerResponse, mockContainerObject } from '../fixtures/docker'
@@ -14,7 +14,7 @@ vi.mock('@/utils/logger', () => ({
 }))
 
 describe('DockerService', () => {
-  let mockDocker: any
+  let mockDocker: { ping: MockInstance; version: MockInstance; info: MockInstance; listContainers: MockInstance; getContainer: MockInstance; listVolumes: MockInstance; getVolume: MockInstance }
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -84,11 +84,11 @@ describe('DockerService', () => {
     }
 
     // Mock the Docker constructor to return our mock
-    vi.mocked(Docker).mockImplementation(() => mockDocker)
+    vi.mocked(Docker).mockImplementation(() => mockDocker as unknown as Docker)
 
       // Reset the dockerService instance by accessing its private docker property
       // This is a workaround since dockerService is a singleton
-      ; (dockerService as any).docker = mockDocker
+      ; (dockerService as unknown as { docker: typeof mockDocker }).docker = mockDocker
   })
 
   describe('ping', () => {

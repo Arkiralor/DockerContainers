@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import ContainerDetailsModal from '@/components/ContainerDetailsModal'
 
-const mockDetailedContainer: any = {
+const mockDetailedContainer = {
   Id: 'abcd1234567890',
   Name: '/postgres',
   Created: new Date('2024-01-01').toISOString(),
@@ -76,11 +76,11 @@ describe('ContainerDetailsModal', () => {
     vi.mocked(useContainer).mockReturnValue({
       data: mockDetailedContainer,
       isLoading: false,
-    } as any)
+    } as unknown as ReturnType<typeof useContainer>)
     vi.mocked(useContainerLogs).mockReturnValue({
       data: mockLogs,
       isLoading: false,
-    } as any)
+    } as unknown as ReturnType<typeof useContainerLogs>)
   })
 
   describe('Modal Visibility', () => {
@@ -112,7 +112,7 @@ describe('ContainerDetailsModal', () => {
       vi.mocked(useContainer).mockReturnValue({
         data: undefined,
         isLoading: true,
-      } as any)
+      } as unknown as ReturnType<typeof useContainer>)
 
       renderWithProviders(
         <ContainerDetailsModal
@@ -132,7 +132,7 @@ describe('ContainerDetailsModal', () => {
       vi.mocked(useContainer).mockReturnValue({
         data: undefined,
         isLoading: true,
-      } as any)
+      } as unknown as ReturnType<typeof useContainer>)
 
       renderWithProviders(
         <ContainerDetailsModal
@@ -244,7 +244,7 @@ describe('ContainerDetailsModal', () => {
       vi.mocked(useContainer).mockReturnValue({
         data: stoppedContainer,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useContainer>)
 
       renderWithProviders(
         <ContainerDetailsModal
@@ -356,7 +356,7 @@ describe('ContainerDetailsModal', () => {
       vi.mocked(useContainer).mockReturnValue({
         data: containerNoLimits,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useContainer>)
 
       renderWithProviders(
         <ContainerDetailsModal
@@ -399,7 +399,7 @@ describe('ContainerDetailsModal', () => {
       vi.mocked(useContainerLogs).mockReturnValue({
         data: { logs: '' },
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useContainerLogs>)
 
       renderWithProviders(
         <ContainerDetailsModal
@@ -419,7 +419,7 @@ describe('ContainerDetailsModal', () => {
       vi.mocked(useContainerLogs).mockReturnValue({
         data: undefined,
         isLoading: false,
-      } as any)
+      } as unknown as ReturnType<typeof useContainerLogs>)
 
       renderWithProviders(
         <ContainerDetailsModal

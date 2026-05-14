@@ -46,7 +46,7 @@ vi.mock('@/components/ServiceDetailsModal', () => ({
 }))
 
 vi.mock('@/components/Dialog', () => ({
-  default: ({ isOpen, title, message, onConfirm, onCancel }: any) =>
+  default: ({ isOpen, title, message, onConfirm, onCancel }: { isOpen: boolean; title: string; message: string; onConfirm: () => void; onCancel: () => void }) =>
     isOpen ? (
       <div>
         <h2>{title}</h2>
@@ -58,7 +58,7 @@ vi.mock('@/components/Dialog', () => ({
 }))
 
 vi.mock('@/components/ServiceCard', () => ({
-  default: ({ service, onStart, onStop, onViewDetails, isLoading }: any) => (
+  default: ({ service, onStart, onStop, onViewDetails, isLoading }: { service: { id: string; name: string; running: boolean }; onStart: (id: string) => void; onStop: (id: string) => void; onViewDetails: (id: string) => void; isLoading: boolean }) => (
     <div>
       <h3>{service.name}</h3>
       {service.running ? (
@@ -101,8 +101,8 @@ describe('ServiceList', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(useStartService).mockReturnValue(mockMutations as any)
-    vi.mocked(useStopService).mockReturnValue(mockMutations as any)
+    vi.mocked(useStartService).mockReturnValue(mockMutations as unknown as ReturnType<typeof useStartService>)
+    vi.mocked(useStopService).mockReturnValue(mockMutations as unknown as ReturnType<typeof useStartService>)
   })
 
   describe('Loading State', () => {
@@ -112,7 +112,7 @@ describe('ServiceList', () => {
         isLoading: true,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       renderWithProviders(<ServiceList />)
 
@@ -129,7 +129,7 @@ describe('ServiceList', () => {
         isLoading: false,
         error: mockError,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       renderWithProviders(<ServiceList />)
 
@@ -144,7 +144,7 @@ describe('ServiceList', () => {
         isLoading: false,
         error: mockError,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       renderWithProviders(<ServiceList />)
 
@@ -161,7 +161,7 @@ describe('ServiceList', () => {
         isLoading: false,
         error: mockError,
         refetch: mockRefetch,
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       renderWithProviders(<ServiceList />)
 
@@ -178,7 +178,7 @@ describe('ServiceList', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       renderWithProviders(<ServiceList />)
 
@@ -192,7 +192,7 @@ describe('ServiceList', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       renderWithProviders(<ServiceList />)
 
@@ -207,7 +207,7 @@ describe('ServiceList', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
     })
 
     it('displays services heading', () => {
@@ -250,13 +250,13 @@ describe('ServiceList', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
     })
 
     it('calls start mutation when start is clicked', async () => {
       const user = userEvent.setup()
       const mockStart = { mutate: vi.fn(), isPending: false }
-      vi.mocked(useStartService).mockReturnValue(mockStart as any)
+      vi.mocked(useStartService).mockReturnValue(mockStart as unknown as ReturnType<typeof useStartService>)
 
       renderWithProviders(<ServiceList />)
 
@@ -293,7 +293,7 @@ describe('ServiceList', () => {
     it('calls stop mutation when confirmed', async () => {
       const user = userEvent.setup()
       const mockStop = { mutate: vi.fn(), isPending: false }
-      vi.mocked(useStopService).mockReturnValue(mockStop as any)
+      vi.mocked(useStopService).mockReturnValue(mockStop as unknown as ReturnType<typeof useStopService>)
 
       renderWithProviders(<ServiceList />)
 
@@ -337,7 +337,7 @@ describe('ServiceList', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
     })
 
     it('opens details modal when details button is clicked', async () => {
@@ -363,7 +363,7 @@ describe('ServiceList', () => {
         isLoading: false,
         error: null,
         refetch: mockRefetch,
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       renderWithProviders(<ServiceList />)
 
@@ -381,11 +381,11 @@ describe('ServiceList', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
     })
 
     it('passes isLoading true to cards when start is pending', () => {
-      vi.mocked(useStartService).mockReturnValue({ isPending: true } as any)
+      vi.mocked(useStartService).mockReturnValue({ isPending: true } as unknown as ReturnType<typeof useServices>)
 
       renderWithProviders(<ServiceList />)
 
@@ -400,7 +400,7 @@ describe('ServiceList', () => {
     })
 
     it('passes isLoading true to cards when stop is pending', () => {
-      vi.mocked(useStopService).mockReturnValue({ isPending: true } as any)
+      vi.mocked(useStopService).mockReturnValue({ isPending: true } as unknown as ReturnType<typeof useServices>)
 
       renderWithProviders(<ServiceList />)
 
@@ -423,7 +423,7 @@ describe('ServiceList', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       renderWithProviders(<ServiceList />)
 
@@ -437,7 +437,7 @@ describe('ServiceList', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as any)
+      } as unknown as ReturnType<typeof useServices>)
 
       renderWithProviders(<ServiceList />)
 

@@ -130,9 +130,9 @@ describe('API Flow Integration Tests', () => {
       vi.mocked(dockerService.listContainers).mockResolvedValue(mockContainers)
 
       const mockExec = vi.mocked(exec)
-      mockExec.mockImplementation((cmd: any, options: any, callback: any) => {
+      mockExec.mockImplementation((cmd: string, options: unknown, callback: (err: Error | null, result: { stdout: string; stderr: string }) => void) => {
         callback(null, { stdout: 'Service started\n', stderr: '' })
-        return {} as any
+        return {} as unknown as ReturnType<typeof exec>
       })
 
       // List all services
@@ -303,9 +303,9 @@ describe('API Flow Integration Tests', () => {
       vi.mocked(dockerService.getContainerLogs).mockResolvedValue('Service started successfully')
 
       const mockExec = vi.mocked(exec)
-      mockExec.mockImplementation((cmd: any, options: any, callback: any) => {
+      mockExec.mockImplementation((cmd: string, options: unknown, callback: (err: Error | null, result: { stdout: string; stderr: string }) => void) => {
         callback(null, { stdout: 'Service started\n', stderr: '' })
-        return {} as any
+        return {} as unknown as ReturnType<typeof exec>
       })
 
       // Step 1: Check initial service status

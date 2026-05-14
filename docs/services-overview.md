@@ -91,6 +91,34 @@ This document provides a detailed overview of all services included in this Dock
 - **Storage**: Minimal (for persistence files)
 - **CPU**: 1+ cores recommended
 
+## libreFS
+
+**Purpose**: S3-compatible object storage (community fork of MinIO, AGPL-3.0)
+**Port**: 9000 (S3 API), 9001 (Web Console)
+**Data Persistence**: Yes (`librefs_data` volume)
+**Configuration**: `config/minio.conf`
+
+### Key Features
+
+- Full S3 API compatibility
+- Browser-based web console for bucket management
+- Presigned URL generation
+- Bucket policies and ACLs
+- Drop-in replacement for MinIO (same env vars, same API)
+
+### Use Cases
+
+- File upload and download storage for web applications
+- Static asset hosting during local development
+- S3-compatible storage for testing boto3/django-storages integrations
+- Local replacement for AWS S3
+
+### Resource Requirements
+
+- **Memory**: Minimum 256MB, recommended 512MB
+- **Storage**: Varies based on stored objects
+- **CPU**: 0.5+ cores recommended
+
 ## Service Access
 
 All services are standalone and accessed via exposed ports on localhost. External applications connect directly to each service independently.
@@ -101,6 +129,8 @@ All services are standalone and accessed via exposed ports on localhost. Externa
 - **PostgreSQL**: `localhost:5432`
 - **OpenSearch**: `localhost:9200`
 - **OpenSearch Dashboards**: `localhost:5601`
+- **libreFS S3 API**: `localhost:9000`
+- **libreFS Web Console**: `localhost:9001`
 
 ### Typical Usage Patterns
 
@@ -116,6 +146,10 @@ All services are standalone and accessed via exposed ports on localhost. Externa
    - Application connects to Redis at `localhost:6379` for caching
    - Application connects to PostgreSQL at `localhost:5432` for data storage
    - Application connects to OpenSearch at `localhost:9200` for search and log analysis
+
+4. **File Storage Application**:
+   - Application connects to libreFS at `localhost:9000` for S3-compatible file storage
+   - Application connects to PostgreSQL at `localhost:5432` for metadata
 
 ### Multi-Redis Setup
 
@@ -153,6 +187,10 @@ Services do not communicate with each other. Each service runs independently and
 - RDB snapshots: `src/redis/data/dump.rdb`
 - AOF log: `src/redis/data/appendonly.aof`
 
+### libreFS
+
+- Object data: Stored in the `librefs_data` Docker volume
+
 ## Monitoring and Health Checks
 
 Each service includes health check endpoints:
@@ -160,6 +198,7 @@ Each service includes health check endpoints:
 - **PostgreSQL**: `pg_isready` command
 - **Redis**: `redis-cli ping` command  
 - **OpenSearch**: HTTP GET to `/_cluster/health`
+- **libreFS**: HTTP GET to `/minio/health/live`
 
 Use the `./scripts/status.sh` script to check the health of all services.
 
