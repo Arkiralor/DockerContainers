@@ -12,6 +12,7 @@ This repository provides high-grade Docker Compose setups for popular open-sourc
 - **[PostgreSQL](#postgresql)** - Powerful relational database (v16+)
 - **[Redis](#redis)** - High-performance in-memory data store (single & multi-instance)
 - **[OpenSearch](#opensearch)** - Search and analytics engine with dashboards
+- **[libreFS](#librefs)** - S3-compatible object storage (community fork of MinIO)
 
 ## Table of Contents
 
@@ -58,6 +59,8 @@ That's it! Your services are now running:
 - Redis: `localhost:6379`
 - OpenSearch: `localhost:9200`
 - OpenSearch Dashboards: `localhost:5601`
+- libreFS S3 API: `localhost:9000`
+- libreFS Web Console: `localhost:9001`
 
 ### Alternative: Without Make
 
@@ -289,6 +292,44 @@ curl http://localhost:9200/_cluster/health?pretty
 
 ---
 
+### libreFS
+
+**Image**: `ghcr.io/librefs/librefs:latest`
+**Ports**: 9000 (S3 API), 9001 (Web Console)
+**Default Credentials**: `minioadmin` / `minioadmin`
+
+libreFS is a community fork of MinIO that provides S3-compatible object storage under AGPL-3.0.
+It is a drop-in replacement for MinIO, supporting the same S3 API, environment variables, and
+admin interface.
+
+**Features**:
+- Full S3 API compatibility (PutObject, GetObject, presigned URLs, ACLs, etc.)
+- Browser-based web console for bucket management
+- Persistent data storage
+- Health checks enabled
+- Resource limits (512MB RAM, 0.5 CPU)
+
+**Access**:
+- S3 API: http://localhost:9000
+- Web Console: http://localhost:9001
+
+**Quick Commands**:
+```bash
+make start-minio            # Start libreFS
+make stop-minio             # Stop libreFS
+make shell-minio            # Open shell in container
+make logs-minio             # View logs
+```
+
+**Health Check**:
+```bash
+curl -f http://localhost:9000/minio/health/live
+```
+
+[Full libreFS Documentation](src/minio/README.md)
+
+---
+
 ## Using the Makefile
 
 The repository includes a comprehensive Makefile with 25+ commands for easy management.
@@ -319,17 +360,20 @@ make restore                 # Restore from backup (interactive)
 make start-redis             # Start Redis (single)
 make start-postgres          # Start PostgreSQL
 make start-opensearch        # Start OpenSearch + Dashboards
+make start-minio             # Start libreFS
 make start-multi-redis       # Start all 5 Redis instances
 
 # Stop services
 make stop-redis              # Stop Redis
 make stop-postgres           # Stop PostgreSQL
 make stop-opensearch         # Stop OpenSearch + Dashboards
+make stop-minio              # Stop libreFS
 
 # Restart services
 make restart-redis           # Restart Redis
 make restart-postgres        # Restart PostgreSQL
 make restart-opensearch      # Restart OpenSearch
+make restart-minio           # Restart libreFS
 ```
 
 ### Logs & Debugging
@@ -339,6 +383,7 @@ make logs-redis              # Follow Redis logs
 make logs-postgres           # Follow PostgreSQL logs
 make logs-opensearch         # Follow OpenSearch logs
 make logs-dashboards         # Follow Dashboards logs
+make logs-minio              # Follow libreFS logs
 ```
 
 ### Shell Access
@@ -347,6 +392,7 @@ make logs-dashboards         # Follow Dashboards logs
 make shell-redis             # Open Redis CLI
 make shell-postgres          # Open PostgreSQL shell (psql)
 make shell-opensearch        # Open bash in OpenSearch container
+make shell-minio             # Open shell in libreFS container
 ```
 
 ### Quick Status
@@ -478,7 +524,7 @@ cd test && ./test.sh
 - Docker daemon running
 - All services running
 - Health checks passing
-- Port accessibility (5432, 6379, 9200, 5601)
+- Port accessibility (5432, 6379, 9200, 5601, 9000, 9001)
 - Database connectivity
 - Read/write operations
 - Volume persistence
@@ -563,6 +609,7 @@ All services have default resource limits to prevent system exhaustion:
 | PostgreSQL | 1 GB | 1.0 | 512 MB |
 | Redis (each) | 512 MB | 0.5 | 256 MB |
 | OpenSearch | 2 GB | 1.0 | 1 GB |
+| libreFS | 512 MB | 0.5 | 256 MB |
 
 **Why resource limits?**
 - Prevents any single service from consuming all system resources
@@ -598,6 +645,8 @@ make test                    # Run all tests
 lsof -i :5432               # PostgreSQL
 lsof -i :6379               # Redis
 lsof -i :9200               # OpenSearch
+lsof -i :9000               # libreFS S3 API
+lsof -i :9001               # libreFS Web Console
 
 # View detailed logs
 make logs-postgres
@@ -661,21 +710,21 @@ This repository follows these principles:
 ### How It Works
 
 ```
-┌─────────────────────────────────────────┐
-│         Your Application(s)             │
-│                                         │
-│  (Node.js, Python, Java, etc.)         │
-└─────────────────────────────────────────┘
-          │            │            │
-          │            │            │
-      localhost     localhost   localhost
-        :5432         :6379        :9200
-          │            │            │
-          ▼            ▼            ▼
-    ┌─────────┐  ┌─────────┐  ┌─────────┐
-    │PostgreSQL│  │  Redis  │  │OpenSearch│
-    │Container │  │Container│  │Container │
-    └─────────┘  └─────────┘  └─────────┘
+┌──────────────────────────────────────────────────────┐
+│                Your Application(s)                    │
+│                                                      │
+│            (Node.js, Python, Java, etc.)             │
+└──────────────────────────────────────────────────────┘
+       │            │            │            │
+       │            │            │            │
+   localhost     localhost   localhost    localhost
+     :5432         :6379       :9200     :9000/:9001
+       │            │            │            │
+       ▼            ▼            ▼            ▼
+ ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐
+ │PostgreSQL│  │  Redis  │  │OpenSearch│  │ libreFS │
+ │Container │  │Container│  │Container │  │Container│
+ └─────────┘  └─────────┘  └─────────┘  └─────────┘
 ```
 
 **Key Points**:

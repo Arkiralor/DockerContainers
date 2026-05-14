@@ -179,6 +179,32 @@ test_opensearch_volume() {
     print_result "OpenSearch volume exists" $?
 }
 
+# libreFS (S3-compatible object storage) Tests
+test_librefs_running() {
+    check_service_running "src/minio" "librefs"
+    print_result "libreFS container is running" $?
+}
+
+test_librefs_health() {
+    curl -sf http://localhost:9000/minio/health/live &> /dev/null
+    print_result "libreFS health endpoint responds" $?
+}
+
+test_librefs_api_port() {
+    nc -z localhost 9000 &> /dev/null
+    print_result "libreFS S3 API port 9000 is accessible" $?
+}
+
+test_librefs_console_port() {
+    nc -z localhost 9001 &> /dev/null
+    print_result "libreFS web console port 9001 is accessible" $?
+}
+
+test_librefs_volume() {
+    docker volume inspect minio_librefs_data &> /dev/null
+    print_result "libreFS volume exists" $?
+}
+
 # Script Tests
 test_backup_script_exists() {
     [ -x "scripts/backup.sh" ]
@@ -259,6 +285,16 @@ main() {
     test_opensearch_dashboards_running
     test_opensearch_dashboards_port
     test_opensearch_volume
+    echo ""
+
+    # libreFS Tests
+    echo "libreFS Tests"
+    echo "-------------------"
+    test_librefs_running
+    test_librefs_health
+    test_librefs_api_port
+    test_librefs_console_port
+    test_librefs_volume
     echo ""
 
     # Script Tests

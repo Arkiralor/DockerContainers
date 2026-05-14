@@ -31,6 +31,14 @@ export const mockServices = [
     containerName: 'opensearch-dashboards',
     ports: [5601],
   },
+  {
+    id: 'minio',
+    name: 'libreFS',
+    description: 'S3-compatible object storage',
+    status: 'running',
+    containerName: 'librefs',
+    ports: [9000, 9001],
+  },
 ]
 
 export const mockMakeCommandOutput = {

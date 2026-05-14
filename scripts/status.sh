@@ -105,7 +105,7 @@ main() {
     check_docker
 
     # Array of services
-    services=("src/redis" "src/postgresql" "src/opensearch")
+    services=("src/redis" "src/postgresql" "src/opensearch" "src/minio")
 
     # Check status of each service
     for service in "${services[@]}"; do

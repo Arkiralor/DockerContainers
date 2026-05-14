@@ -47,8 +47,11 @@ requirements.txt
 
 ## Projects-specific ignores
 CLAUDE.md
+AGENTS.md
+AGENT.md
 IMPROVENTS.md
 *backups/*
 dev-tools/
 dev_tools/
 .claude/
+.devin/

@@ -69,6 +69,7 @@ lint-compose: ## Validate Docker Compose files
 	@cd src/postgresql && docker-compose config --quiet
 	@cd src/redis && docker-compose config --quiet
 	@cd src/opensearch && docker-compose config --quiet
+	@cd src/minio && docker-compose config --quiet
 	@echo "Docker Compose files are valid"
 
 clean: ## Remove all containers, volumes, and data (WARNING: DATA LOSS)
@@ -96,8 +97,8 @@ logs-opensearch: ## Show OpenSearch logs
 logs-dashboards: ## Show OpenSearch Dashboards logs
 	@cd src/opensearch && docker-compose logs -f opensearch-dashboards
 
-logs-minio:
-	@cd src/minio && docker-compose logs -f mini-io
+logs-minio: ## Follow libreFS logs
+	@cd src/minio && docker-compose logs -f librefs
 
 logs-mongo:
 	@cd src/mongodb && docker-compose logs -f mongodb
@@ -124,8 +125,8 @@ start-opensearch: ## Start only OpenSearch with Dashboards
 	@echo "Starting OpenSearch..."
 	@cd src/opensearch && docker-compose up -d
 
-start-minio:
-	@echo "Starting MiniIO..."
+start-minio: ## Start libreFS
+	@echo "Starting libreFS..."
 	@cd src/minio && docker-compose up -d
 
 start-mongodb:
@@ -156,8 +157,8 @@ stop-opensearch: ## Stop OpenSearch
 	@echo "Stopping OpenSearch..."
 	@cd src/opensearch && docker-compose stop
 
-stop-minio:
-	@echo "Stopping MiniIO..."
+stop-minio: ## Stop libreFS
+	@echo "Stopping libreFS..."
 	@cd src/minio && docker-compose stop
 
 stop-mongodb:
@@ -191,10 +192,10 @@ suspend-opensearch:
 	@cd src/opensearch && docker-compose down
 	@echo "...OpenSearch suspended."
 
-suspend-minio:
-	@echo "Suspending MiniIO..."
+suspend-minio: ## Suspend libreFS (stop without removing)
+	@echo "Suspending libreFS..."
 	@cd src/minio && docker-compose down
-	@echo "...MiniIO suspended."
+	@echo "...libreFS suspended."
 
 suspend-mongodb:
 	@echo "Suspending MongoDB..."
@@ -225,8 +226,8 @@ restart-postgres: stop-postgres start-postgres ## Restart PostgreSQL
 restart-opensearch: stop-opensearch start-opensearch ## Restart OpenSearch
 	@echo "OpenSearch restarted"
 
-restart-minio: stop-minio start-minio ## Restart MiniIO
-	@echo "MiniIO restarted"
+restart-minio: stop-minio start-minio ## Restart libreFS
+	@echo "libreFS restarted"
 
 restart-mongodb: stop-mongodb start-mongodb ## Restart MongoDB
 	@echo "MongoDB restarted"
@@ -259,8 +260,8 @@ shell-postgres: ## Open PostgreSQL shell
 shell-opensearch: ## Open bash shell in OpenSearch container
 	@cd src/opensearch && docker-compose exec opensearch bash
 
-shell-minio: ## Open bash shell in MiniIO container
-	@cd src/minio && docker-compose exec mini-io sh
+shell-minio: ## Open bash shell in libreFS container
+	@cd src/minio && docker-compose exec librefs sh
 
 shell-mongodb: ## Open MongoDB shell
 	@cd src/mongodb && docker-compose exec mongodb mongosh
@@ -276,7 +277,7 @@ shell-smtp4dev: ## Open bash shell in SMTP4Dev container
 
 # Quick status checks
 ps: ## Show running containers (short format)
-	@docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "postgres|redis|opensearch|NAMES"
+	@docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "postgres|redis|opensearch|librefs|NAMES"
 
 stats: ## Show resource usage statistics
 	@docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}"

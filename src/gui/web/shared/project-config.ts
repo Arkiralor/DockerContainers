@@ -26,6 +26,13 @@ export const PROJECT_CONTAINERS = {
     composeDir: 'src/opensearch',
     ports: [5601],
     description: 'OpenSearch Dashboards UI'
+  },
+  librefs: {
+    name: 'librefs',
+    displayName: 'libreFS',
+    composeDir: 'src/minio',
+    ports: [9000, 9001],
+    description: 'S3-compatible object storage'
   }
 } as const
 

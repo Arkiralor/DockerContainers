@@ -76,6 +76,19 @@ export const SERVICES = {
         }
       }
     ] as ServiceContainer[]
+  },
+  minio: {
+    id: 'minio',
+    name: 'libreFS',
+    description: 'S3-compatible object storage for local development',
+    composeDir: 'src/minio',
+    containerName: 'librefs',
+    ports: [9000, 9001],
+    makeCommands: {
+      start: 'start-minio',
+      stop: 'stop-minio',
+      logs: 'logs-minio'
+    }
   }
 } as const
 
